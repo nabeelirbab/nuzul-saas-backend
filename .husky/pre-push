@@ -1,0 +1,4 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+echo "\n Runing tests before pushing..\n"
+php artisan test
