@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Stancl\Tenancy\Database\Models\Domain;
 
+$centralDomains = explode(',', env('CENTRAL_DOMAINS'));
+
 return [
     'tenant_model' => \App\Models\Tenant::class,
     'id_generator' => Stancl\Tenancy\UUIDGenerator::class,
@@ -15,9 +17,7 @@ return [
      *
      * Only relevant if you're using the domain or subdomain identification middleware.
      */
-    'central_domains' => [
-        'nuxul.com',
-    ],
+    'central_domains' => $centralDomains,
 
     /*
      * Tenancy bootstrappers are executed when tenancy is initialized.

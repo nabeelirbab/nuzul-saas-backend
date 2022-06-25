@@ -8,6 +8,7 @@ use App\Http\Requests\Api\VerifyRequest;
 use App\Models\SmsVerification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -89,37 +90,73 @@ class UserController extends Controller
             return $query->where('mobile_number', $request->get('mobile_number'));
         })->whereBetween('created_at', [Carbon::now()->addSeconds(-3), Carbon::now()])->exists();
 
-        abort_if($verification, 403, __('You cannot send verification now'));
+        abort_if($verification, 403, App::isLocale('en') ? 'You cannot send verification now, try again after 1 minute.' : 'لا يمكنك طلب الرمز في الوقت الحالي، الرجاء المحاولة بعد مرور دقيقة واحدة');
 
+        $code = app()->environment(['dev', 'local', 'testing']) ? '1111' : rand(1000, 9999);
         $verify = new SmsVerification([
             'mobile_number' => $request->get('mobile_number'),
-            'code' => app()->environment(['dev', 'local', 'testing']) ? '1111' : rand(1000, 9999),
+            'code' => $code,
         ]);
 
         $verify->save();
+
+        if (app()->environment(['production'])) {
+            Unifonic::send($request->mobile_number, 'Your code is: '.$code, 'Nuzul');
+        }
 
         return response()->json($verify);
     }
 
     public function verify(VerifyRequest $request)
     {
-        $phone = SmsVerification::whereBetween('created_at', [Carbon::now()->addSeconds(-3), Carbon::now()])->where('mobile_number', $request->mobile_number)->latest()->first();
+        $phone = SmsVerification::where('mobile_number', $request->mobile_number)->latest()->first();
 
         if (!$phone) {
-            return response()->json(['Message' => 'Wrong phone number or code expired, request another code.'], 422);
+            switch (App::currentLocale()) {
+                case 'ar':
+                    $message = 'خطأ في رقم الهاتف او الرمز المدخل، الرجاء طلب رمز جديد.';
+
+                    break;
+
+                    default:
+                    $message = 'Wrong phone number or code expired, request another code.';
+            }
+
+            return response()->json(['message' => $message], 422);
         }
 
         if (null !== $phone->token) {
-            return response()->json(['Message' => 'Code expired, request another code.'], 422);
+            switch (App::currentLocale()) {
+                case 'ar':
+                    $message = 'انتهت صلاحية الرمز، الرجاء طلب رمز جديد.';
+
+                    break;
+
+                    default:
+                    $message = 'Code expired, request another code.';
+            }
+
+            return response()->json(['message' => $message], 422);
         }
 
-        if ('3' === $phone->attempts) {
-            return response()->json(['Message' => 'Attempts exceeded, request another code.'], 422);
+        if ('3' === $phone->attempts || 3 === $phone->attempts) {
+            switch (App::currentLocale()) {
+                case 'ar':
+                    $message = 'انتهت عدد المحاولات، الرجاء طلب رمز جديد.';
+
+                    break;
+
+                    default:
+                    $message = 'Attempts exceeded, request another code.';
+            }
+
+            return response()->json(['message' => $message], 422);
         }
 
-        $sms = SmsVerification::whereBetween('created_at', [Carbon::now()->addSeconds(-15), Carbon::now()])->where('mobile_number', $request->mobile_number)->where('code', $request->code)->latest()->first();
+        $sms = SmsVerification::where('mobile_number', $request->mobile_number)->where('code', $request->code)->latest()->first();
 
         if ($sms) {
+            SmsVerification::where('mobile_number', $request->mobile_number)->update(['token' => null]);
             $token = Hash::make(random_bytes(64));
             $sms->token = $token;
             $sms->update();
@@ -131,7 +168,17 @@ class UserController extends Controller
             $phone->attempts = $phone->attempts + 1;
             $phone->update();
 
-            return response()->json(['Message' => 'Wrong code.'], 422);
+            switch (App::currentLocale()) {
+                case 'ar':
+                    $message = 'الرمز المدخل غير صحيح.';
+
+                    break;
+
+                    default:
+                    $message = 'Please provide correct code.';
+            }
+
+            return response()->json(['message' => $message], 422);
         }
     }
 }

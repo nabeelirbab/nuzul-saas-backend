@@ -90,17 +90,17 @@ final class SmsVerificationTest extends TestCase
         $code = '4444';
         $response = $this->postJson('/api/verify-code', ['mobile_number' => $phoneNumber, 'code' => $code]);
         $response->assertStatus(422);
-        $response->assertSeeText('Wrong code.');
+        $response->assertSeeText('Please provide correct code.');
 
         $code = '3333';
         $response = $this->postJson('/api/verify-code', ['mobile_number' => $phoneNumber, 'code' => $code]);
         $response->assertStatus(422);
-        $response->assertSeeText('Wrong code.');
+        $response->assertSeeText('Please provide correct code.');
 
         $code = '2222';
         $response = $this->postJson('/api/verify-code', ['mobile_number' => $phoneNumber, 'code' => $code]);
         $response->assertStatus(422);
-        $response->assertSeeText('Wrong code.');
+        $response->assertSeeText('Please provide correct code.');
 
         $code = '1111';
         $response = $this->postJson('/api/verify-code', ['mobile_number' => $phoneNumber, 'code' => $code]);

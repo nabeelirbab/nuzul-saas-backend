@@ -7,6 +7,7 @@ use App\Http\Requests\Api\CityStoreRequest;
 use App\Http\Requests\Api\CityUpdateRequest;
 use App\Http\Resources\CityResource;
 use App\Models\City;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 class CityController extends Controller
@@ -25,7 +26,7 @@ class CityController extends Controller
      */
     public function index()
     {
-        if (auth()->check() && auth()->user()->hasRole('admin')) {
+        if (auth()->check() && Role::ADMIN === auth()->user()->role_id) {
             $cities = City::all();
         } else {
             $cities = City::where('active', true)->get();

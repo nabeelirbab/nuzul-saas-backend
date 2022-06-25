@@ -10,13 +10,12 @@ class CreateTenantsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
         Schema::create('tenants', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->bigInteger('id')->primary()->unsigned()->index();
+            $table->foreign('id')->references('id')->on('companies')->unsigned();
 
             // your custom columns may go here
 
@@ -27,8 +26,6 @@ class CreateTenantsTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {

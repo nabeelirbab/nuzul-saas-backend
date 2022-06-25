@@ -8,6 +8,7 @@ use App\Http\Requests\Api\CountryUpdateRequest;
 use App\Http\Resources\CountryCollection;
 use App\Http\Resources\CountryResource;
 use App\Models\Country;
+use App\Models\Role;
 
 class CountryController extends Controller
 {
@@ -25,7 +26,7 @@ class CountryController extends Controller
      */
     public function index()
     {
-        if (auth()->check() && auth()->user()->hasRole('admin')) {
+        if (auth()->check() && Role::ADMIN === auth()->user()->role_id) {
             $countries = Country::all();
         } else {
             $countries = Country::where('active', '1')->get();

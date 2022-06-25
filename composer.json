@@ -15,10 +15,17 @@
         "laravel/framework": "^8.0",
         "laravel/sanctum": "^2.8",
         "laravel/tinker": "^2.0",
-        "spatie/laravel-permission": "^4.2",
+        "league/flysystem-aws-s3-v3": "^1.0",
+        "maatwebsite/excel": "^3.1",
+        "multicaret/laravel-unifonic": "^2.0",
+        "optimus/bruno": "^6.0",
+        "spatie/laravel-sluggable": "^2.6",
+        "vinkla/hashids": "^9.1",
         "stancl/tenancy": "^3.5"
     },
     "require-dev": {
+        "beyondcode/laravel-dump-server": "^1.7",
+        "beyondcode/laravel-query-detector": "dev-master",
         "facade/ignition": "^2.3.6",
         "fzaninotto/faker": "^1.9.1",
         "mockery/mockery": "^1.3.1",
@@ -45,7 +52,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/common.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

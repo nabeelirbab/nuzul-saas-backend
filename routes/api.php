@@ -19,7 +19,11 @@ Route::post('send-sms', 'UserController@generateSMS');
 Route::post('verify-code', 'UserController@verify');
 
 Route::post('login', 'AuthController@login');
-Route::post('register', 'AuthController@register');
+
+Route::group(['middleware' => ['TokenIsValid']], function () {
+    Route::post('register', 'AuthController@register');
+    Route::post('reset-password', 'AuthController@resetPassword');
+});
 
 Route::get('countries', [CountryController::class, 'index']);
 Route::get('cities', [CityController::class, 'index']);

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -23,7 +24,7 @@ class CityPolicy
      */
     public function create(User $user)
     {
-        if ($user->can('cities.create')) {
+        if (Role::ADMIN === $user->role_id) {
             return true;
         }
     }
@@ -45,7 +46,7 @@ class CityPolicy
      */
     public function update(User $user)
     {
-        if ($user->can('cities.edit')) {
+        if (Role::ADMIN === $user->role_id) {
             return true;
         }
     }

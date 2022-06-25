@@ -27,7 +27,6 @@ class UserRegisterRequest extends FormRequest
         return [
             'name' => 'required|max:50|regex:/^[\pL\s\-]+$/u',
             'email' => 'required|email|max:50|unique:users',
-            'mobile_number' => 'required|numeric|digits:10',
             'password' => 'required',
         ];
     }

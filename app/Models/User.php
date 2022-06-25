@@ -6,13 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;
-    use HasRoles;
     use Notifiable;
 
     protected $guard_name = 'api';
@@ -25,8 +23,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'username',
         'password',
         'mobile_number',
+        'gender',
+        'role_id',
     ];
 
     /**
@@ -47,4 +48,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id', 'id');
+    }
+
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class)->withPivot(['user_id', 'company_role_id', 'active'])->using(CompanyUser::class);
+    }
 }

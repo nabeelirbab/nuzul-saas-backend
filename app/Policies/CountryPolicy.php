@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -23,7 +24,7 @@ class CountryPolicy
      */
     public function create(User $user)
     {
-        if ($user->can('countries.create')) {
+        if (Role::ADMIN === $user->role_id) {
             return true;
         }
     }
@@ -45,7 +46,7 @@ class CountryPolicy
      */
     public function update(User $user)
     {
-        if ($user->can('countries.edit')) {
+        if (Role::ADMIN === $user->role_id) {
             return true;
         }
     }
