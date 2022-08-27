@@ -28,8 +28,8 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_DATABASE: homestead
-      MYSQL_USER: homestead
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laraveluser
       MYSQL_PASSWORD: secret
       MYSQL_ROOT_PASSWORD: secret
       SERVICE_TAGS: dev

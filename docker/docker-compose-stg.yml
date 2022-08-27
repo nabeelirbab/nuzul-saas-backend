@@ -28,8 +28,8 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_DATABASE: homestead
-      MYSQL_USER: homestead
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laraveluser
       MYSQL_PASSWORD: secret
       MYSQL_ROOT_PASSWORD: secret
       SERVICE_TAGS: dev
@@ -46,6 +46,8 @@ services:
     container_name: php
     volumes:
       - ../:/var/www/html
+      # - /usr/local/etc/php/php.ini-development:/usr/local/etc/php/php.ini
+      - ./php.ini:/usr/local/etc/php/php.ini
     ports:
       - "9000:9000"
     networks:
@@ -69,6 +71,7 @@ services:
     container_name: artisan
     volumes:
       - ../:/var/www/html
+      - ./php.ini:/usr/local/etc/php/php.ini
     depends_on:
       - mysql
     working_dir: /var/www/html
