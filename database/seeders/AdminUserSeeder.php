@@ -18,7 +18,7 @@ class AdminUserSeeder extends Seeder
             'email' => 'abdulmajeednasser@gmail.com',
             'mobile_number' => '966501111111',
             'password' => bcrypt('P@ssw0rd123'),
-            'role_id' => Role::COMPANY,
+            'role_id' => Role::ADMIN,
         ]);
     }
 }

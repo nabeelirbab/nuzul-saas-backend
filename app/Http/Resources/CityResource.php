@@ -20,7 +20,9 @@ class CityResource extends JsonResource
             'name_ar' => $this->name_ar,
             'name_en' => $this->name_en,
             'country_id' => $this->country_id,
-            'country' => new CountryResource($this->country),
+            'region_id' => $this->region_id,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
         ];
     }
 }

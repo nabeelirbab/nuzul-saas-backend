@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Invitation;
+use App\Models\Role;
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -17,10 +20,46 @@ final class AuthAPITest extends TestCase
      */
     public function testUserCanLoginWithCorrectCredentials()
     {
-        User::factory()->create(['mobile_number' => '966501175111', 'email' => 'user@salem.com', 'password' => Hash::make('secret')]);
+        $userData = [
+            'name' => 'Raz',
+            'password' => bcrypt('secret'),
+            'mobile_number' => '966501175111',
+            'email' => 'user@nuzul.app',
+            'role_id' => Role::COMPANY,
+        ];
+
+        $user = User::create($userData);
+
+        $tenant = Tenant::create([
+            'id' => 1,
+            'name_en' => 'Nuzul x',
+            'name_ar' => 'نزل اكس',
+        ]);
+
+        $tenant->users()->attach($user->id, ['company_role_id' => Role::COMPANY_OWNER]);
+
+        $centralDomains = explode(',', env('CENTRAL_DOMAINS'));
+
+        $tenant->domains()->create(['domain' => readable_random_string().$tenant->id.'.'.$centralDomains[1]]);
+
+        $tenant2 = Tenant::create(
+            [
+                'id' => 2,
+                'name_en' => 'Spaces',
+                'name_ar' => 'سبيسز',
+            ]
+        );
+
+        Invitation::create([
+            'mobile_number' => '966501175111',
+            'tenant_id' => $tenant2->id,
+            'expires_at' => now()->addDays(5),
+            'company_role_id' => 5,
+        ]);
 
         $response = $this->postJson('/api/login', ['mobile_number' => '966501175111', 'password' => 'secret']);
         $response->assertStatus(200);
+
         $response->assertJsonStructure(
             [
                 'data' => [
@@ -29,6 +68,26 @@ final class AuthAPITest extends TestCase
                     'mobile_number',
                     'role',
                     'name',
+                    'pending_invitations' => ['*' => [
+                        'id',
+                        'mobile_number',
+                        'status',
+                        'workspace' => [
+                            'name_ar',
+                            'name_en',
+                        ],
+                    ],
+                    ],
+                    'workspaces' => ['*' => [
+                        'id',
+                        'is_default',
+                        'name_en',
+                        'name_ar',
+                        'active',
+                        'company_role',
+                        'domain',
+                    ],
+                    ],
                 ],
             ]
         );
@@ -67,6 +126,6 @@ final class AuthAPITest extends TestCase
 
         $response = $this->postJson('/api/register', $userData);
         $response->assertSuccessful();
-        static::assertSame($response->json()['data']['role'], 'company');
+        static::assertSame($response->json()['data']['role']['name_en'], 'Company');
     }
 }

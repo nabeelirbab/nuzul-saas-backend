@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Models\Role;
+use App\Models\Tenant;
 use App\Models\User;
 use BeyondCode\QueryDetector\QueryDetector;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -66,14 +67,14 @@ abstract class TestCase extends BaseTestCase
                 && ($data = $response->baseResponse->getData(true))
                 && isset($data['trace'])
             ) {
-                $exceptionMessage .= "\n\n".(
+                $exceptionMessage .= "\n\n".
                     collect($data['trace'])
                         ->filter(fn ($trace) => !empty($trace['file']))
                         ->filter(fn ($trace) => !empty($trace['line']))
                         ->filter(fn ($trace) => !Str::contains($trace['file'], base_path('vendor')))
                         ->map(fn ($trace) => $trace['file'].':'.$trace['line'])
                         ->implode("\n")
-                );
+                ;
             }
 
             throw new \Exception($exceptionMessage);
@@ -156,6 +157,32 @@ abstract class TestCase extends BaseTestCase
     public function companyOwnerLogin()
     {
         $user = User::factory()->create(['role_id' => Role::COMPANY_OWNER]);
+
+        return Sanctum::actingAs($user);
+    }
+
+    public function companyAccountLogin()
+    {
+        $userData = [
+            'name' => 'Raz',
+            'password' => bcrypt('secret'),
+            'mobile_number' => '966501175111',
+            'email' => 'user@nuzul.app',
+            'role_id' => Role::COMPANY,
+        ];
+
+        $user = User::create($userData);
+
+        $tenant = Tenant::create([
+            'id' => 1,
+            'name_en' => 'Nuzul x',
+            'name_ar' => 'نزل اكس',
+        ]);
+
+        $tenant->users()->attach($user->id, ['company_role_id' => Role::COMPANY_OWNER]);
+
+        $centralDomains = explode(',', env('CENTRAL_DOMAINS'));
+        $tenant->domains()->create(['domain' => readable_random_string().$tenant->id.'.'.$centralDomains[1]]);
 
         return Sanctum::actingAs($user);
     }

@@ -5,7 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class City extends Model
+/**
+ * @internal
+ * @coversNothing
+ */
+final class City extends Model
 {
     use HasFactory;
 
@@ -15,9 +19,12 @@ class City extends Model
      * @var array
      */
     protected $fillable = [
+        'region_id',
         'country_id',
         'name_ar',
         'name_en',
+        'longitude',
+        'latitude',
     ];
 
     public function country()

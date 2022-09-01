@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UserRegisterRequest;
+use App\Http\Resources\InvitationResource;
 use App\Http\Resources\UserResource;
-use App\Models\Company;
 use App\Models\Role;
 use App\Models\SmsVerification;
 use App\Models\Tenant;
@@ -32,23 +32,40 @@ class AuthController extends Controller
 
         $token = $user->createToken(time());
 
-        return ['data' => [
-            'token' => $token->plainTextToken,
-            'email' => $user->email,
-            'mobile_number' => $user->mobile_number,
-            'role' => $user->role->name_en,
-            'name' => $user->name,
-            'companies' => $user->companies->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'name_en' => $item->name_en,
-                    'name_ar' => $item->name_ar,
-                    'active' => $item->active,
-                    'company_role' => $item->pivot->role->name_en,
-                ];
-            }),
-        ],
+        $loginArray = [
+            'data' => [
+                'token' => $token->plainTextToken,
+                'email' => $user->email,
+                'mobile_number' => $user->mobile_number,
+                'role' => [
+                    'role_id' => $user->role->id,
+                    'name_ar' => $user->role->name_ar,
+                    'name_en' => $user->role->name_en,
+                ],
+                'name' => $user->name,
+                'workspaces' => $user->tenants->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'is_default' => $item->pivot->is_default,
+                        'name_en' => $item->name_en,
+                        'name_ar' => $item->name_ar,
+                        'active' => $item->active,
+                        'company_role' => [
+                            'role_id' => $item->pivot->role->id,
+                            'name_ar' => $item->pivot->role->name_ar,
+                            'name_en' => $item->pivot->role->name_en,
+                        ],
+                        'domain' => Tenant::find($item->id)->domains->first()->domain,
+                    ];
+                }),
+                'pending_invitations' => InvitationResource::collection($user->pendingInvitations),
+            ],
         ];
+        if (Role::COMPANY !== (string) $user->role_id) {
+            unset($loginArray['data']['workspaces']);
+        }
+
+        return $loginArray;
     }
 
     public function register(UserRegisterRequest $request)
@@ -65,19 +82,18 @@ class AuthController extends Controller
 
         $user = User::create($userData);
 
-        $company = Company::create(
+        $tenant = Tenant::create(
             [
                 'name_en' => $request['name'],
                 'name_ar' => $request['name'],
             ]
         );
 
-        $company->users()->attach($user->id, ['company_role_id' => Role::COMPANY_OWNER]);
+        $tenant->users()->attach($user->id, ['company_role_id' => Role::COMPANY_OWNER]);
 
-        $centralDomain = env('CENTRAL_DOMAINS');
+        $centralDomains = explode(',', env('CENTRAL_DOMAINS'));
 
-        $tenant = Tenant::create(['id' => $company->id]);
-        $tenant->domains()->create(['domain' => readable_random_string().$company->id.'.'.$centralDomain]);
+        $tenant->domains()->create(['domain' => readable_random_string().$tenant->id.'.'.$centralDomains[1]]);
 
         $token = $user->createToken(time());
 
@@ -86,7 +102,34 @@ class AuthController extends Controller
 
         SmsVerification::where('token', $request->token)->update(['token' => null]);
 
-        return $user;
+        $loginArray = [
+            'data' => [
+                'token' => $token->plainTextToken,
+                'email' => $user->email,
+                'mobile_number' => $user->mobile_number,
+                'role' => [
+                    'role_id' => $user->role->id,
+                    'name_ar' => $user->role->name_ar,
+                    'name_en' => $user->role->name_en,
+                ],
+                'name' => $user->name,
+                'workspaces' => $user->tenants->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'name_en' => $item->name_en,
+                        'name_ar' => $item->name_ar,
+                        'company_role' => [
+                            'role_id' => $item->pivot->role->id,
+                            'name_ar' => $item->pivot->role->name_ar,
+                            'name_en' => $item->pivot->role->name_en,
+                        ],
+                        'domain' => Tenant::find($item->id)->domains->first()->domain,
+                    ];
+                }),
+            ],
+        ];
+
+        return $loginArray;
     }
 
     public function logout()

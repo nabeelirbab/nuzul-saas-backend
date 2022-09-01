@@ -28,6 +28,9 @@ class CityStoreRequest extends FormRequest
             'name_ar' => 'required|max:50|unique:cities',
             'name_en' => 'required|max:50|unique:cities',
             'country_id' => 'required|exists:countries,id',
+            'region_id' => 'required|exists:regions,id',
+            'latitude' => 'required',
+            'longitude' => 'required',
         ];
     }
 }

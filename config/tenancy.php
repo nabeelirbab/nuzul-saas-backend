@@ -8,7 +8,7 @@ $centralDomains = explode(',', env('CENTRAL_DOMAINS'));
 
 return [
     'tenant_model' => \App\Models\Tenant::class,
-    'id_generator' => Stancl\Tenancy\UUIDGenerator::class,
+    'id_generator' => null, // Stancl\Tenancy\UUIDGenerator::class,
 
     'domain_model' => Domain::class,
 

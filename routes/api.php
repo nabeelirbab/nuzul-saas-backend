@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\API\CityController;
 use App\Http\Controllers\API\CountryController;
+use App\Http\Controllers\API\InvitationController;
+use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\TransactionController;
+use App\Http\Controllers\API\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,17 +31,40 @@ Route::group(['middleware' => ['TokenIsValid']], function () {
 
 Route::get('countries', [CountryController::class, 'index']);
 Route::get('cities', [CityController::class, 'index']);
+Route::get('packages', 'PackageController@index');
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('packages', 'PackageController@index');
+    Route::group(['prefix' => 'me'], function () {
+        Route::get('/', [UserController::class, 'show']);
+        Route::post('/', [UserController::class, 'update']);
+    });
 
     Route::group(['prefix' => 'countries'], function () {
         Route::post('/', [CountryController::class, 'store']);
         Route::put('/{country}', [CountryController::class, 'update']);
     });
 
+    Route::group(['prefix' => 'orders'], function () {
+        Route::get('/', [OrderController::class, 'index']);
+    });
+
     Route::group(['prefix' => 'cities'], function () {
         Route::post('/', [CityController::class, 'store']);
         Route::put('/{city}', [CityController::class, 'update']);
+    });
+
+    Route::group(['prefix' => 'packages'], function () {
+        Route::post('/', [PackagesController::class, 'store']);
+        Route::put('/{package}', [PackagesController::class, 'update']);
+    });
+
+    Route::group(['prefix' => 'transactions'], function () {
+        Route::put('/{transaction}/accept', [TransactionController::class, 'accept']);
+    });
+
+    Route::group(['prefix' => 'invitations'], function () {
+        Route::get('/', [InvitationController::class, 'index']);
+        Route::put('/{invitation}/accept', [InvitationController::class, 'accept']);
+        Route::put('/{invitation}/decline', [InvitationController::class, 'decline']);
     });
 });

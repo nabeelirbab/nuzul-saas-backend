@@ -54,8 +54,13 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class, 'role_id', 'id');
     }
 
-    public function companies()
+    public function tenants()
     {
-        return $this->belongsToMany(Company::class)->withPivot(['user_id', 'company_role_id', 'active'])->using(CompanyUser::class);
+        return $this->belongsToMany(Tenant::class)->withPivot(['user_id', 'company_role_id', 'is_default'])->using(TenantUser::class);
+    }
+
+    public function getPendingInvitationsAttribute()
+    {
+        return Invitation::where('mobile_number', $this->mobile_number)->get();
     }
 }

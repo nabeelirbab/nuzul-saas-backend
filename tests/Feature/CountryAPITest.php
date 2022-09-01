@@ -16,7 +16,7 @@ final class CountryAPITest extends TestCase
      */
     public function testAdminCanCreateACountry()
     {
-        //login as a admin
+        // login as a admin
         $this->adminLogin();
         $response = $this->postJson('/api/countries', ['name_ar' => 'السعودية', 'name_en' => 'Saudi Arabia']);
         $response->assertSuccessful();
@@ -44,7 +44,7 @@ final class CountryAPITest extends TestCase
      */
     public function testUserCanViewActiveCountriesOnly()
     {
-        //adding 3 counties
+        // adding 3 counties
         Country::factory()->create(['active' => '1']);
         Country::factory()->create(['active' => '1']);
         Country::factory()->create(['active' => '0']);
@@ -70,12 +70,12 @@ final class CountryAPITest extends TestCase
      */
     public function testAdminCanViewAllCountries()
     {
-        //adding 3 counties
+        // adding 3 counties
         Country::factory()->create(['active' => '1']);
         Country::factory()->create(['active' => '1']);
         Country::factory()->create(['active' => '0']);
 
-        //login as a admin
+        // login as a admin
         $this->adminLogin();
         $response = $this->getJson('/api/countries');
         $response->assertSuccessful();
@@ -99,7 +99,7 @@ final class CountryAPITest extends TestCase
     {
         $country = Country::factory()->create(['name_ar' => 'السعودية', 'name_en' => 'Saudi Arabia', 'active' => true]);
 
-        //login as a admin
+        // login as a admin
         $this->adminLogin();
         $response = $this->putJson('/api/countries/'.$country->id, ['name_ar' => 'باكستان', 'name_en' => 'Pakistan', 'active' => false]);
         $response->assertSuccessful();

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\City;
 use App\Models\Country;
+use App\Models\Region;
 use Tests\TestCase;
 
 /**
@@ -17,10 +18,11 @@ final class CityAPITest extends TestCase
      */
     public function testAdminCanCreateACity()
     {
-        //login as a admin
+        // login as a admin
         $this->adminLogin();
         $country = Country::factory()->create(['name_ar' => 'السعودية', 'name_en' => 'Saudi Arabia', 'active' => '1']);
-        $response = $this->postJson('/api/cities', ['country_id' => $country->id, 'name_ar' => 'الرياض', 'name_en' => 'Riyadh']);
+        $region = Region::factory()->create();
+        $response = $this->postJson('/api/cities', ['country_id' => $country->id, 'region_id' => $region->id, 'name_ar' => 'الرياض', 'name_en' => 'Riyadh', 'latitude' => '33,444', 'longitude' => '23,333']);
         $response->assertSuccessful();
         $response->assertJsonStructure(
             [
@@ -28,6 +30,9 @@ final class CityAPITest extends TestCase
                     'country_id',
                     'name_ar',
                     'name_en',
+                    'region_id',
+                    'latitude',
+                    'longitude',
                 ],
             ]
         );
@@ -47,7 +52,7 @@ final class CityAPITest extends TestCase
      */
     public function testUserCanViewActiveCitiesOnly()
     {
-        //adding 3 cities
+        // adding 3 cities
         $city = City::factory()->create(['active' => '1']);
         City::factory()->create(['active' => '1']);
         City::factory()->create(['active' => '0']);
@@ -75,12 +80,12 @@ final class CityAPITest extends TestCase
      */
     public function testAdminCanViewAllCities()
     {
-        //adding 3 cities
+        // adding 3 cities
         City::factory()->create(['active' => '1']);
         City::factory()->create(['active' => '1']);
         City::factory()->create(['active' => '0']);
 
-        //login as a admin
+        // login as a admin
         $this->adminLogin();
         $response = $this->getJson('/api/cities');
         $response->assertSuccessful();
@@ -102,22 +107,27 @@ final class CityAPITest extends TestCase
      */
     public function testAdminCanUpdateACity()
     {
+        $this->withoutExceptionHandling();
         $city = City::factory()->create(['name_ar' => 'السعودية', 'name_en' => 'Saudi Arabia', 'active' => '1']);
+        $country = City::factory()->create();
+        // login as a admin
+        $region = Region::factory()->create();
 
-        //login as a admin
         $this->adminLogin();
-        $response = $this->putJson('/api/cities/'.$city->id, ['name_ar' => 'باكستان', 'name_en' => 'Pakistan', 'active' => '0']);
+        $response = $this->putJson('/api/cities/'.$city->id, ['country_id' => $country->id, 'region_id' => $region->id, 'name_ar' => 'باكستان', 'name_en' => 'Pakistan', 'latitude' => '33,444', 'longitude' => '23,333']);
         $response->assertSuccessful();
         $response->assertJsonStructure(
             [
                 'data' => [
                     'name_ar',
                     'name_en',
+                    'country_id',
                 ],
             ]
         );
         static::assertSame($response->json()['data']['name_ar'], 'باكستان');
         static::assertSame($response->json()['data']['name_en'], 'Pakistan');
+        static::assertSame($response->json()['data']['country_id'], $country->id);
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Http\Resources\CityResource;
 use App\Models\City;
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CityController extends Controller
 {
@@ -36,42 +37,15 @@ class CityController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @return CityResource
      */
     public function store(CityStoreRequest $request)
     {
-        if ($city = City::create($request->toArray())) {
+        if ($city = City::create($request->validated())) {
             return new CityResource($city);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function show(City $city)
-    {
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(City $city)
-    {
     }
 
     /**
@@ -83,6 +57,8 @@ class CityController extends Controller
      */
     public function update(CityUpdateRequest $request, City $city)
     {
+        $city->region_id = $request->region_id;
+        $city->country_id = $request->country_id;
         $city->name_ar = $request->name_ar;
         $city->name_en = $request->name_en;
         $city->update();
@@ -90,12 +66,18 @@ class CityController extends Controller
         return new CityResource($city);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(City $city)
+    public function getCityByLatLong(Request $request)
     {
+        $shops = DB::table('cities');
+
+        $shops = $shops->select('*', DB::raw('6371 * acos(cos(radians('.$request->lat.'))
+                                    * cos(radians(latitude)) * cos(radians(longitude) - radians('.$request->long.'))
+                                    + sin(radians('.$request->lat.')) * sin(radians(latitude))) AS distance'));
+        $shops = $shops->having('distance', '>', 10);
+        $shops = $shops->orderBy('distance', 'asc');
+
+        return $shops->get();
+
+        return new CityResource($shops->first());
     }
 }
