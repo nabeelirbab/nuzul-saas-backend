@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Tenant;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -35,6 +36,7 @@ class UserResource extends JsonResource
                         'name_ar' => $item->pivot->role->name_ar,
                         'name_en' => $item->pivot->role->name_en,
                     ],
+                    'domain' => Tenant::find($item->id)->domains->first()->domain,
                 ];
             }),
         ];

@@ -46,7 +46,7 @@ class AuthController extends Controller
                 'workspaces' => $user->tenants->map(function ($item) {
                     return [
                         'id' => $item->id,
-                        'is_default' => $item->pivot->is_default,
+                        'is_default' => (bool) $item->pivot->is_default,
                         'name_en' => $item->name_en,
                         'name_ar' => $item->name_ar,
                         'active' => $item->active,
@@ -89,7 +89,7 @@ class AuthController extends Controller
             ]
         );
 
-        $tenant->users()->attach($user->id, ['company_role_id' => Role::COMPANY_OWNER]);
+        $tenant->users()->attach($user->id, ['company_role_id' => Role::COMPANY_OWNER, 'is_default', true]);
 
         $centralDomains = explode(',', env('CENTRAL_DOMAINS'));
 
@@ -116,6 +116,7 @@ class AuthController extends Controller
                 'workspaces' => $user->tenants->map(function ($item) {
                     return [
                         'id' => $item->id,
+                        'is_default' => (bool) $item->pivot->is_default,
                         'name_en' => $item->name_en,
                         'name_ar' => $item->name_ar,
                         'company_role' => [
@@ -126,6 +127,7 @@ class AuthController extends Controller
                         'domain' => Tenant::find($item->id)->domains->first()->domain,
                     ];
                 }),
+                'pending_invitations' => InvitationResource::collection($user->pendingInvitations),
             ],
         ];
 
