@@ -30,6 +30,6 @@ class CreateTenantUserTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('company_user');
+        Schema::dropIfExists('tenant_user');
     }
 }

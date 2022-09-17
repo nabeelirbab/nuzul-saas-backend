@@ -29,6 +29,7 @@ class UserResource extends JsonResource
             'workspaces' => $this->tenants->map(function ($item) {
                 return [
                     'id' => $item->id,
+                    'is_default' => (bool) $item->pivot->is_default,
                     'name_en' => $item->name_en,
                     'name_ar' => $item->name_ar,
                     'company_role' => [
@@ -39,6 +40,7 @@ class UserResource extends JsonResource
                     'domain' => Tenant::find($item->id)->domains->first()->domain,
                 ];
             }),
+            'pending_invitations' => InvitationResource::collection($this->pendingInvitations),
         ];
     }
 }

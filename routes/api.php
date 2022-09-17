@@ -4,6 +4,7 @@ use App\Http\Controllers\API\CityController;
 use App\Http\Controllers\API\CountryController;
 use App\Http\Controllers\API\InvitationController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\TenantController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Support\Facades\Route;
@@ -66,5 +67,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/', [InvitationController::class, 'index']);
         Route::put('/{invitation}/accept', [InvitationController::class, 'accept']);
         Route::put('/{invitation}/decline', [InvitationController::class, 'decline']);
+    });
+
+    Route::group(['prefix' => 'workspaces'], function () {
+        Route::get('/', [UserController::class, 'getUserWorkspaces']);
+        Route::get('/{tenant}', [TenantController::class, 'show']);
     });
 });

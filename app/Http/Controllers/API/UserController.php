@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\SendSMSRequest;
 use App\Http\Requests\Api\VerifyRequest;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\WorkspaceResource;
 use App\Models\SmsVerification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -28,6 +29,11 @@ class UserController extends Controller
         return new UserResource(auth()->user());
     }
 
+    public function getUserWorkspaces()
+    {
+        return WorkspaceResource::collection(auth()->user()->tenants);
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -37,6 +43,7 @@ class UserController extends Controller
      */
     public function update(Request $request)
     {
+        auth()->user()->email = $request->email;
         auth()->user()->gender = $request->gender;
         auth()->user()->name = $request->name;
         auth()->user()->update();
