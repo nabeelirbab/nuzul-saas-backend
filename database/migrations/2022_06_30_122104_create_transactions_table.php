@@ -13,6 +13,8 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('tenant_id')->index();
+            $table->foreign('tenant_id')->references('id')->on('tenants');
             $table->unsignedBigInteger('order_id')->index();
             $table->foreign('order_id')->references('id')->on('orders');
             $table->float('total_amount');

@@ -17,11 +17,13 @@
         "laravel/tinker": "^2.0",
         "league/flysystem-aws-s3-v3": "^1.0",
         "maatwebsite/excel": "^3.1",
+        "moyasar/moyasar": "^1.1",
         "multicaret/laravel-unifonic": "^2.0",
+        "nesbot/carbon": "^2.62",
         "optimus/bruno": "^6.0",
         "spatie/laravel-sluggable": "^2.6",
-        "vinkla/hashids": "^9.1",
-        "stancl/tenancy": "^3.5"
+        "stancl/tenancy": "^3.5",
+        "vinkla/hashids": "^9.1"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.7",

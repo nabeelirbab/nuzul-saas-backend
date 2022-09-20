@@ -59,12 +59,13 @@ class OrderController extends Controller
             ], 422);
         }
 
-        // TODO: check if package is published
+        // TODO: refactor check if package is published
         if ('published' === $package->status) {
-            // TODO: check if the package is trial
+            // TODO: refactor check if the package is trial
             if ($package->is_trial) {
-                // TODO: check if tenant had a trial before
+                // TODO: refactor check if tenant had a trial before
                 if (!$tenant->subscriptions()->trial()->count()) {
+                    // check if payment of
                     $orderData =
                     [
                         'tenant_id' => $tenant->id,
@@ -81,6 +82,7 @@ class OrderController extends Controller
                     $order = Order::create($orderData);
 
                     $transaction = Transaction::create([
+                        'tenant_id' => $order->tenant_id,
                         'order_id' => $order->id,
                         'total_amount' => 0,
                         'status' => 'approved',
@@ -88,7 +90,6 @@ class OrderController extends Controller
                     ]);
 
                     // if package is trial. Subscription should start instantly.
-
                     Subscription::create(
                         [
                             'tenant_id' => $transaction->order->tenant_id,
@@ -132,6 +133,7 @@ class OrderController extends Controller
                 $order = Order::create($orderData);
 
                 $transaction = Transaction::create([
+                    'tenant_id' => $order->tenant_id,
                     'order_id' => $order->id,
                     'total_amount' => $totalAmount,
                     'status' => 'pending',

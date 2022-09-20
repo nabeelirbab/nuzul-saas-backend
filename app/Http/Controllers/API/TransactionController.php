@@ -17,8 +17,11 @@ class TransactionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function tenantTransactions()
     {
+        $transactions = Transaction::paginate(100);
+
+        return TransactionResource::collection($transactions);
     }
 
     /**
