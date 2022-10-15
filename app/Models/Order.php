@@ -14,7 +14,7 @@ class Order extends Model
     protected $fillable = [
         'tenant_id',
         'package_id',
-        'package_price_monthly',
+        'package_price_quarterly',
         'package_price_yearly',
         'package_tax',
         'tax_amount',

@@ -8,10 +8,12 @@ use App\Http\Resources\OrderResource;
 use App\Http\Resources\TransactionResource;
 use App\Models\Order;
 use App\Models\Package;
+use App\Models\Payment;
 use App\Models\Role;
 use App\Models\Subscription;
 use App\Models\Tenant;
 use App\Models\Transaction;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -51,7 +53,6 @@ class OrderController extends Controller
         }
 
         // check if the tenant doesn't have a previous pending order.
-
         if ('0' !== (string) $tenant->orders->where('status', 'pending_payment')->count()) {
             return response()->json([
                 'message' => 'You already have a pending order, to make a new order you must cancel it.',
@@ -70,7 +71,7 @@ class OrderController extends Controller
                     [
                         'tenant_id' => $tenant->id,
                         'package_id' => $request->package_id,
-                        'package_price_monthly' => $package->price_monthly,
+                        'package_price_quarterly' => $package->price_quarterly,
                         'package_price_yearly' => $package->price_yearly,
                         'package_tax' => $package->tax,
                         'tax_amount' => 0,
@@ -95,7 +96,7 @@ class OrderController extends Controller
                             'tenant_id' => $transaction->order->tenant_id,
                             'package_id' => $transaction->order->package_id,
                             'start_date' => now(),
-                            'end_date' => ('monthly' === $transaction->order ? now()->addDays(30) : now()->addDays(365)),
+                            'end_date' => ('quarterly' === $transaction->order ? now()->addDays(30) : now()->addDays(365)),
                             'status' => 'active',
                             'is_trial' => true,
                         ]
@@ -114,14 +115,14 @@ class OrderController extends Controller
 
             // not trail
             if (!$package->is_trial) {
-                $taxAmount = 'monthly' === $request->period ? $package->tax * $package->price_monthly : $package->tax * $package->price_yearly;
-                $totalAmount = 'monthly' === $request->period ? ($package->tax * $package->price_monthly) + $package->price_monthly : ($package->tax * $package->price_yearly) + $package->price_yearly;
+                $taxAmount = 'quarterly' === $request->period ? ($package->tax * $package->price_quarterly / 100) : ($package->tax * $package->price_yearly / 100);
+                $totalAmount = 'quarterly' === $request->period ? ($package->tax * $package->price_quarterly / 100) + $package->price_quarterly : ($package->tax * $package->price_yearly / 100) + $package->price_yearly;
 
                 $orderData =
                 [
                     'tenant_id' => $tenant->id,
                     'package_id' => $request->package_id,
-                    'package_price_monthly' => $package->price_monthly,
+                    'package_price_quarterly' => $package->price_quarterly,
                     'package_price_yearly' => $package->price_yearly,
                     'package_tax' => $package->tax,
                     'tax_amount' => $taxAmount,
@@ -151,6 +152,68 @@ class OrderController extends Controller
             ]);
         }
 
+        return new OrderResource($order);
+    }
+
+    public function paymentHandler(Request $request)
+    {
+        \Moyasar\Moyasar::setApiKey(env('MOYASAR_KEY'));
+
+        $paymentService = new \Moyasar\Providers\PaymentService();
+
+        $payment = $paymentService->fetch($request->id);
+        // dd($payment);
+
+        if ('paid' === $payment->status) {
+            // if payment succeeded
+            // get the order id
+            // check if the order is pending payment.
+            // check if transaction id is pending.
+            // check the order total amount equals amount
+            // validate order and transaction
+            // create subscription
+            $o = Order::find($payment->metadata['order_id']);
+            if ('pending_payment' === $o->status) {
+                if ((float) ($payment->amount / 100) === $o->total_amount) {
+                    $t = Transaction::find($payment->metadata['transaction_id']);
+                    if ('pending' === $t->status) {
+                        $t->status = 'approved';
+                        $t->update();
+                        $o->status = 'completed';
+                        $o->update();
+                        Subscription::create(['tenant_id' => $o->tenant_id, 'package_id' => $o->package_id, 'start_date' => now(), 'end_date' => now()->addMonths(3), 'status' => 'active', 'is_trial' => false]);
+                    }
+                }
+            }
+        }
+
+        if ('failed' === $payment->status) {
+            // check if payment failed
+            // update transaction status to declined
+            // store the response into response
+            // store payment id to reference_number
+            $o = Order::find($payment->metadata['order_id']);
+            $t = Transaction::find($payment->metadata['transaction_id']);
+            if ('pending' === $t->status) {
+                $t->status = 'declined';
+                $t->update();
+                $o->status = 'canceled';
+                $o->update();
+            }
+        }
+
+        Payment::create(['object' => $payment->toJson()]);
+
+        return redirect()->away($payment->metadata['redirect_url']);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Order $order)
+    {
         return new OrderResource($order);
     }
 

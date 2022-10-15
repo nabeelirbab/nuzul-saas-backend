@@ -17,7 +17,7 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'package_price_monthly' => $this->package_price_monthly,
+            'package_price_quarterly' => $this->package_price_quarterly,
             'package_price_yearly' => $this->package_price_yearly,
             'package_tax' => $this->package_tax,
             'tax_amount' => $this->tax_amount,

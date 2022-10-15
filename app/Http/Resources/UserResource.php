@@ -32,8 +32,9 @@ class UserResource extends JsonResource
                     'is_default' => (bool) $item->pivot->is_default,
                     'name_en' => $item->name_en,
                     'name_ar' => $item->name_ar,
+                    'active' => 0 === $item->subscriptions->where('status', 'active')->count() ? false : true,
                     'company_role' => [
-                        'name_ar' => $item->pivot->role->id,
+                        'role_id' => $item->pivot->role->id,
                         'name_ar' => $item->pivot->role->name_ar,
                         'name_en' => $item->pivot->role->name_en,
                     ],

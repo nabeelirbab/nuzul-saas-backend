@@ -17,12 +17,12 @@ class CreateOrdersTable extends Migration
             $table->foreign('tenant_id')->references('id')->on('tenants');
             $table->unsignedBigInteger('package_id')->index();
             $table->foreign('package_id')->references('id')->on('packages');
-            $table->float('package_price_monthly');
+            $table->float('package_price_quarterly');
             $table->float('package_price_yearly');
             $table->float('package_tax');
             $table->float('tax_amount');
             $table->float('total_amount');
-            $table->enum('period', ['monthly', 'yearly']);
+            $table->enum('period', ['quarterly', 'yearly']);
             $table->enum('status', ['pending_payment', 'completed', 'canceled'])->default('pending_payment');
             $table->timestamps();
         });

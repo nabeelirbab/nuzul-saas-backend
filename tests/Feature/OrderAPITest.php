@@ -10,6 +10,7 @@ use Tests\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class OrderAPITest extends TestCase
@@ -23,7 +24,7 @@ final class OrderAPITest extends TestCase
             [
                 'name_ar' => 'Gold-trial',
                 'name_en' => 'الذهبية-تجربة',
-                'price_monthly' => 0,
+                'price_quarterly' => 0,
                 'price_yearly' => 0,
                 'tax' => 0,
                 'status' => 'published',
@@ -41,7 +42,7 @@ final class OrderAPITest extends TestCase
             '/api/orders',
             [
                 'package_id' => $package->id,
-                'period' => 'monthly',
+                'period' => 'quarterly',
                 'payment_method' => 'bank_transfer',
             ]
         );
@@ -51,7 +52,7 @@ final class OrderAPITest extends TestCase
             [
                 'data' => [
                     'id',
-                    'package_price_monthly',
+                    'package_price_quarterly',
                     'package_price_yearly',
                     'package_tax',
                     'tax_amount',
@@ -64,12 +65,12 @@ final class OrderAPITest extends TestCase
             ]
         );
 
-        static::assertSame($response->json()['data']['package_price_monthly'], 0);
+        static::assertSame($response->json()['data']['package_price_quarterly'], 0);
         static::assertSame($response->json()['data']['package_price_yearly'], 0);
         static::assertSame($response->json()['data']['package_tax'], 0);
         static::assertSame($response->json()['data']['tax_amount'], 0);
         static::assertSame($response->json()['data']['total_amount'], 0);
-        static::assertSame($response->json()['data']['period'], 'monthly');
+        static::assertSame($response->json()['data']['period'], 'quarterly');
         static::assertSame($response->json()['data']['status'], 'completed');
     }
 
@@ -79,7 +80,7 @@ final class OrderAPITest extends TestCase
             [
                 'name_ar' => 'Gold-trial',
                 'name_en' => 'الذهبية-تجربة',
-                'price_monthly' => 0,
+                'price_quarterly' => 0,
                 'price_yearly' => 0,
                 'tax' => 0,
                 'status' => 'published',
@@ -97,11 +98,12 @@ final class OrderAPITest extends TestCase
             [
                 'tenant_id' => $tenant->id,
                 'package_id' => $package->id,
-                'period' => 'monthly',
+                'period' => 'quarterly',
             ]
         );
         Transaction::factory()->create(
             [
+                'tenant_id' => $tenant->id,
                 'order_id' => $order->id,
                 'total_amount' => $order->total_amount,
                 'status' => 'pending',
@@ -113,7 +115,7 @@ final class OrderAPITest extends TestCase
             '/api/orders',
             [
                 'package_id' => $package->id,
-                'period' => 'monthly',
+                'period' => 'quarterly',
                 'payment_method' => 'bank_transfer',
             ]
         );
@@ -127,7 +129,7 @@ final class OrderAPITest extends TestCase
             [
                 'name_ar' => 'Gold-trial',
                 'name_en' => 'الذهبية-تجربة',
-                'price_monthly' => 0,
+                'price_quarterly' => 0,
                 'price_yearly' => 0,
                 'tax' => 0,
                 'status' => 'published',
@@ -146,12 +148,13 @@ final class OrderAPITest extends TestCase
         $order = Order::factory()->yearly()->create(
             [
                 'package_id' => $package->id,
-                'period' => 'monthly',
+                'period' => 'quarterly',
                 'tenant_id' => $tenantId,
             ]
         );
         Transaction::factory()->create(
             [
+                'tenant_id' => $tenant->id,
                 'order_id' => $order->id,
                 'total_amount' => $order->total_amount,
                 'status' => 'pending',
@@ -163,7 +166,7 @@ final class OrderAPITest extends TestCase
             '/api/orders',
             [
                 'package_id' => $package->id,
-                'period' => 'monthly',
+                'period' => 'quarterly',
                 'tenant_id' => $tenantId,
                 'payment_method' => 'bank_transfer',
             ]
@@ -178,7 +181,7 @@ final class OrderAPITest extends TestCase
             [
                 'name_ar' => 'Gold',
                 'name_en' => 'الذهبية',
-                'price_monthly' => 100,
+                'price_quarterly' => 100,
                 'price_yearly' => 100,
                 'tax' => 0.15,
                 'status' => 'published',
@@ -197,12 +200,13 @@ final class OrderAPITest extends TestCase
         $order = Order::factory()->yearly()->create(
             [
                 'package_id' => $package->id,
-                'period' => 'monthly',
+                'period' => 'quarterly',
                 'tenant_id' => $tenantId,
             ]
         );
         Transaction::factory()->create(
             [
+                'tenant_id' => $tenant->id,
                 'order_id' => $order->id,
                 'total_amount' => $order->total_amount,
                 'status' => 'pending',
@@ -223,7 +227,7 @@ final class OrderAPITest extends TestCase
             [
                 'name_ar' => 'Gold',
                 'name_en' => 'الذهبية',
-                'price_monthly' => 100,
+                'price_quarterly' => 100,
                 'price_yearly' => 100,
                 'tax' => 0.15,
                 'status' => 'published',
@@ -242,13 +246,14 @@ final class OrderAPITest extends TestCase
         $order = Order::factory()->yearly()->create(
             [
                 'package_id' => $package->id,
-                'period' => 'monthly',
+                'period' => 'quarterly',
                 'tenant_id' => $tenantId,
             ]
         );
 
         Transaction::factory()->create(
             [
+                'tenant_id' => $tenant->id,
                 'order_id' => $order->id,
                 'total_amount' => $order->total_amount,
                 'status' => 'pending',

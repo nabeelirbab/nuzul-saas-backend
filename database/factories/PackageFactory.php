@@ -16,7 +16,7 @@ class PackageFactory extends Factory
         return [
             'name_ar' => 'Gold',
             'name_en' => 'الذهبية',
-            'price_monthly' => 100,
+            'price_quarterly' => 100,
             'price_yearly' => 1100,
             'tax' => 15.0,
             'status' => 'draft',

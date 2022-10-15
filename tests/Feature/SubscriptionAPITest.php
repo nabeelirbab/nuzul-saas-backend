@@ -8,6 +8,7 @@ use Tests\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class SubscriptionAPITest extends TestCase
@@ -21,7 +22,7 @@ final class SubscriptionAPITest extends TestCase
             [
                 'name_ar' => 'Gold-trial',
                 'name_en' => 'الذهبية-تجربة',
-                'price_monthly' => 0,
+                'price_quarterly' => 0,
                 'price_yearly' => 0,
                 'tax' => 0,
                 'status' => 'published',
@@ -39,7 +40,7 @@ final class SubscriptionAPITest extends TestCase
             '/api/orders',
             [
                 'package_id' => $package->id,
-                'period' => 'monthly',
+                'period' => 'quarterly',
                 'payment_method' => 'bank_transfer',
             ]
         );
@@ -49,7 +50,7 @@ final class SubscriptionAPITest extends TestCase
             [
                 'data' => [
                     'id',
-                    'package_price_monthly',
+                    'package_price_quarterly',
                     'package_price_yearly',
                     'package_tax',
                     'tax_amount',
@@ -62,12 +63,12 @@ final class SubscriptionAPITest extends TestCase
             ]
         );
 
-        // static::assertSame($response->json()['data']['package_price_monthly'], 0);
+        // static::assertSame($response->json()['data']['package_price_quarterly'], 0);
         // static::assertSame($response->json()['data']['package_price_yearly'], 0);
         // static::assertSame($response->json()['data']['package_tax'], 0);
         // static::assertSame($response->json()['data']['tax_amount'], 0);
         // static::assertSame($response->json()['data']['total_amount'], 0);
-        // static::assertSame($response->json()['data']['period'], 'monthly');
+        // static::assertSame($response->json()['data']['period'], 'quarterly');
         // static::assertSame($response->json()['data']['status'], 'completed');
 
         $response = $this->getJson(

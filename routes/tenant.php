@@ -30,8 +30,6 @@ Route::group([
         InitializeTenancyByDomain::class,
         PreventAccessFromCentralDomains::class,
     ])->group(function () {
-        Route::get('/orders/handle-payment', [OrderController::class, 'payment']);
-
         Route::group(['middleware' => ['auth:sanctum']], function () {
             // Route::get('/', function () {
             //     return 'This is your saas application. The id of the current tenant is '.tenant('id');
@@ -39,8 +37,9 @@ Route::group([
             // dd(tenant());
             Route::group(['prefix' => 'orders'], function () {
                 Route::get('/', [OrderController::class, 'index']);
+                Route::get('/{order}', [OrderController::class, 'show']);
                 Route::post('/', [OrderController::class, 'store']);
-                Route::get('/payment', [OrderController::class, 'store']);
+                Route::get('{id}/payment-handler', [OrderController::class, 'paymentHandler']);
                 Route::put('/{order}/cancel', [OrderController::class, 'cancel']);
             });
 

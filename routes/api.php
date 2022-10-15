@@ -7,6 +7,8 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\TenantController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserController;
+use App\Models\Payment;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,6 +26,16 @@ Route::post('send-sms', 'UserController@generateSMS');
 Route::post('verify-code', 'UserController@verify');
 
 Route::post('login', 'AuthController@login');
+
+Route::post('/save', function (Request $request) {
+    return Payment::create(['object' => $request->collect()]);
+});
+
+Route::get('/payment', [OrderController::class, 'paymentHandler']);
+
+// Route::get('/payment', function (Request $request) {
+//     return redirect('/home/dashboard');
+// });
 
 Route::group(['middleware' => ['TokenIsValid']], function () {
     Route::post('register', 'AuthController@register');

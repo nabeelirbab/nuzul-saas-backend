@@ -119,6 +119,7 @@ class AuthController extends Controller
                         'is_default' => (bool) $item->pivot->is_default,
                         'name_en' => $item->name_en,
                         'name_ar' => $item->name_ar,
+                        'active' => $item->active,
                         'company_role' => [
                             'role_id' => $item->pivot->role->id,
                             'name_ar' => $item->pivot->role->name_ar,

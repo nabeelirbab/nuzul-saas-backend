@@ -28,19 +28,19 @@ class OrderFactory extends Factory
         ];
     }
 
-    public function monthly()
+    public function quarterly()
     {
         $p = Package::factory()->create();
-        $taxAmount = $p->price_monthly * $p->tax;
-        $totalAmount = $taxAmount + $p->price_monthly;
+        $taxAmount = $p->price_quarterly * $p->tax;
+        $totalAmount = $taxAmount + $p->price_quarterly;
 
         return $this->state(function (array $attributes) use ($p, $taxAmount, $totalAmount) {
             return [
                 'package_id' => $p->id,
-                'package_price_monthly' => $p->price_monthly,
+                'package_price_quarterly' => $p->price_quarterly,
                 'package_price_yearly' => $p->price_yearly,
                 'package_tax' => $p->tax,
-                'period' => 'monthly',
+                'period' => 'quarterly',
                 'tax_amount' => $taxAmount,
                 'total_amount' => $totalAmount,
             ];
@@ -56,7 +56,7 @@ class OrderFactory extends Factory
         return $this->state(function (array $attributes) use ($p, $taxAmount, $totalAmount) {
             return [
                 'package_id' => $p->id,
-                'package_price_monthly' => $p->price_monthly,
+                'package_price_quarterly' => $p->price_quarterly,
                 'package_price_yearly' => $p->price_yearly,
                 'package_tax' => $p->tax,
                 'period' => 'yearly',

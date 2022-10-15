@@ -15,7 +15,7 @@ class CreatePackagesTable extends Migration
             $table->id();
             $table->string('name_ar');
             $table->string('name_en');
-            $table->float('price_monthly');
+            $table->float('price_quarterly');
             $table->float('price_yearly');
             $table->float('tax')->default('0');
             $table->enum('status', ['draft', 'published']);

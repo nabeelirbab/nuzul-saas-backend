@@ -8,6 +8,7 @@ use Tests\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class TransactionAPITest extends TestCase
@@ -17,10 +18,14 @@ final class TransactionAPITest extends TestCase
      */
     public function testAdminCanViewOrders()
     {
+        $user = $this->companyAccountLogin();
+        $tenant = $user->tenants()->first();
+
         $this->adminLogin();
         $order = Order::factory()->yearly()->create();
         Transaction::factory()->create(
             [
+                'tenant_id' => $tenant->id,
                 'order_id' => $order->id,
                 'total_amount' => $order->total_amount,
                 'status' => 'pending',
@@ -40,7 +45,7 @@ final class TransactionAPITest extends TestCase
                 'data' => [
                     '*' => [
                         'id',
-                        'package_price_monthly',
+                        'package_price_quarterly',
                         'package_price_yearly',
                         'package_tax',
                         'tax_amount',
@@ -72,10 +77,14 @@ final class TransactionAPITest extends TestCase
      */
     public function testAdminCanAcceptPendingTransaction()
     {
+        $user = $this->companyAccountLogin();
+        $tenant = $user->tenants()->first();
         $this->adminLogin();
         $order = Order::factory()->yearly()->create();
         $transaction = Transaction::factory()->create(
             [
+                'tenant_id' => $tenant->id,
+
                 'order_id' => $order->id,
                 'total_amount' => $order->total_amount,
                 'status' => 'pending',

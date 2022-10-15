@@ -29,7 +29,7 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'package_id' => 'required|exists:packages,id',
-            'period' => 'required|in:yearly,monthly',
+            'period' => 'required|in:yearly,quarterly',
             'payment_method' => 'required|in:bank_transfer,online',
         ];
     }

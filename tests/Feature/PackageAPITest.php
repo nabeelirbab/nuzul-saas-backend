@@ -7,6 +7,7 @@ use Tests\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class PackageAPITest extends TestCase
@@ -32,7 +33,7 @@ final class PackageAPITest extends TestCase
                         'name_ar',
                         'name_en',
                         'price_yearly',
-                        'price_monthly',
+                        'price_quarterly',
                         'tax',
                         'status',
                     ],
@@ -64,7 +65,7 @@ final class PackageAPITest extends TestCase
                         'name_ar',
                         'name_en',
                         'price_yearly',
-                        'price_monthly',
+                        'price_quarterly',
                         'tax',
                         'status',
                     ],

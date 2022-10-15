@@ -28,7 +28,7 @@ class PackageStoreRequest extends FormRequest
             'name_ar' => 'required|max:50',
             'name_en' => 'required|max:50',
             'level' => 'required|unique',
-            'price_monthly' => 'required',
+            'price_quarterly' => 'required',
             'price_yearly' => 'required',
             'vat' => 'required',
         ];
