@@ -6,6 +6,7 @@ use Tests\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class UserAPITest extends TestCase
@@ -57,6 +58,7 @@ final class UserAPITest extends TestCase
                             'name_en',
                             'name_ar',
                             'company_role' => [
+                                'role_id',
                                 'name_ar',
                                 'name_en',
                             ],

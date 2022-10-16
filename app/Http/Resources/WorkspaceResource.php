@@ -22,7 +22,7 @@ class WorkspaceResource extends JsonResource
             'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
             'company_role' => [
-                'name_ar' => $this->pivot->role->id,
+                'role_id' => $this->pivot->role->id,
                 'name_ar' => $this->pivot->role->name_ar,
                 'name_en' => $this->pivot->role->name_en,
             ],
