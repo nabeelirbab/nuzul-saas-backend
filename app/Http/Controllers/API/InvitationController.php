@@ -50,7 +50,6 @@ class InvitationController extends Controller
     public function store(StoreInvitationRequest $request)
     {
         // check if invitee has invitation pending.
-
         $hasInvitation = Invitation::where([
             ['mobile_number', $request->mobile_number],
             ['status', 'pending'],
@@ -58,7 +57,10 @@ class InvitationController extends Controller
         ])->first();
 
         if ($hasInvitation) {
-            abort('422');
+            return response()->json([
+                'message' => 'There is a already pending invitation.',
+                'errors' => [],
+            ], 422);
         }
 
         $invite = Invitation::create(
