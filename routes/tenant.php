@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\API\InvitationController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\SubscriptionController;
+use App\Http\Controllers\API\TenantUserController;
 use App\Http\Controllers\API\TransactionController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -51,14 +52,16 @@ Route::group([
                 Route::get('/', [SubscriptionController::class, 'index']);
             });
 
-            Route::group(['prefix' => 'invites'], function () {
-                Route::get('/', [SubscriptionController::class, 'index']);
-            });
-
             Route::group(['prefix' => 'invitations'], function () {
                 Route::get('/', [InvitationController::class, 'tenantInvitations']);
                 Route::post('/', [InvitationController::class, 'store']);
                 Route::put('/{invitation}/cancel', [InvitationController::class, 'cancel']);
+            });
+
+            Route::group(['prefix' => 'members'], function () {
+                Route::get('/', [TenantUserController::class, 'tenantMembers']);
+                Route::delete('/{member}', [TenantUserController::class, 'destroy']);
+                Route::put('/{member}/change-role', [TenantUserController::class, 'changeRole']);
             });
         });
     });
