@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Invitations\StoreInvitationRequest;
 use App\Http\Resources\InvitationResource;
 use App\Models\Invitation;
+use App\Models\Role;
 use App\Models\TenantUser;
 use Illuminate\Http\Request;
 
@@ -107,10 +108,25 @@ class InvitationController extends Controller
     {
         // TODO: check if it belongs to the company owner.
 
-        $invitation->status = 'canceled';
-        $invitation->update();
+        // TODO: check if requester is a tenant owner.
+        // get the member tenant id
+        // check if the requester belongs to members tenant.
+        // check if the requester is an owner of the members tenant.
 
-        return new InvitationResource($invitation);
+        if ((int) tenant()->id === (int) $invitation->tenant_id) {
+            $m = TenantUser::where('user_id', auth()->user()->id)->where('tenant_id', tenant()->id)->first();
+            if ((int) Role::COMPANY_OWNER === (int) $m->role->id) {
+                $invitation->status = 'canceled';
+                $invitation->update();
+
+                return new InvitationResource($invitation);
+            }
+        }
+
+        return response()->json([
+            'message' => 'You are not authorized to remove this member.',
+            'errors' => [],
+        ], 401);
     }
 
     public function decline(Invitation $invitation)
