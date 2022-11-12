@@ -62,8 +62,8 @@ Route::group([
             });
 
             Route::group(['prefix' => 'contacts'], function () {
-                Route::get('/', [ContactController::class, 'index']);
                 Route::post('/', [ContactController::class, 'store']);
+                Route::get('/', [ContactController::class, 'index']);
                 Route::put('/{tenantContact}', [TenantContactController::class, 'updateTenantContact']);
                 Route::get('/{tenantContact}', [TenantContactController::class, 'show']);
             });
