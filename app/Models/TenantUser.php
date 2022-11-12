@@ -13,6 +13,7 @@ class TenantUser extends Pivot
         'tenant_id',
         'user_id',
         'company_role_id',
+        'is_default',
     ];
 
     public function user()

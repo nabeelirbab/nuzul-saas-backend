@@ -18,6 +18,15 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         'name_en',
     ];
 
+    public static function getCustomColumns(): array
+    {
+        return [
+            'id',
+            'name_ar',
+            'name_en',
+        ];
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class)->withPivot(['user_id', 'company_role_id'])->using(TenantUser::class);

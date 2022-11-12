@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\API\ContactController;
 use App\Http\Controllers\API\InvitationController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\TenantUserController;
 use App\Http\Controllers\API\TransactionController;
+use App\Http\Controllers\TenantContactController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -50,12 +52,20 @@ Route::group([
 
             Route::group(['prefix' => 'subscriptions'], function () {
                 Route::get('/', [SubscriptionController::class, 'index']);
+                Route::get('/active', [SubscriptionController::class, 'activeSubscription']);
             });
 
             Route::group(['prefix' => 'invitations'], function () {
                 Route::get('/', [InvitationController::class, 'tenantInvitations']);
                 Route::post('/', [InvitationController::class, 'store']);
                 Route::put('/{invitation}/cancel', [InvitationController::class, 'cancel']);
+            });
+
+            Route::group(['prefix' => 'contacts'], function () {
+                Route::get('/', [ContactController::class, 'index']);
+                Route::post('/', [ContactController::class, 'store']);
+                Route::put('/{tenantContact}', [TenantContactController::class, 'updateTenantContact']);
+                Route::get('/{tenantContact}', [TenantContactController::class, 'show']);
             });
 
             Route::group(['prefix' => 'members'], function () {

@@ -89,7 +89,7 @@ class AuthController extends Controller
             ]
         );
 
-        $tenant->users()->attach($user->id, ['company_role_id' => Role::COMPANY_OWNER, 'is_default', true]);
+        $tenant->users()->attach($user->id, ['company_role_id' => Role::COMPANY_OWNER, 'is_default' => true]);
 
         $centralDomains = explode(',', env('CENTRAL_DOMAINS'));
 

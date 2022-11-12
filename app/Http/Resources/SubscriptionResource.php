@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SubscriptionResource extends JsonResource
@@ -15,6 +16,10 @@ class SubscriptionResource extends JsonResource
      */
     public function toArray($request)
     {
+        $startTime = Carbon::parse($this->start_date);
+        $finishTime = Carbon::parse($this->end_date);
+        $totalDuration = $finishTime->diffInDays($startTime);
+
         return [
             'id' => $this->id,
             'package' => [
@@ -22,11 +27,12 @@ class SubscriptionResource extends JsonResource
                 'name_en' => $this->package->name_en,
             ],
             'start_date' => $this->start_date,
-            'end_date' => $this->start_date,
+            'end_date' => $this->end_date,
             'status' => $this->status,
             'is_trial' => $this->is_trial,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'days_left' => $totalDuration,
         ];
     }
 }

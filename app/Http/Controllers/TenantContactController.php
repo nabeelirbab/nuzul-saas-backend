@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\SubscriptionResource;
-use App\Models\Role;
-use App\Models\Subscription;
+use App\Http\Resources\TenantContactResource;
+use App\Models\TenantContact;
 use Illuminate\Http\Request;
 
-class SubscriptionController extends Controller
+class TenantContactController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,14 +15,6 @@ class SubscriptionController extends Controller
      */
     public function index()
     {
-        if (Role::ADMIN === auth()->user()->role_id) {
-            $subscriptions = Subscription::paginate(100);
-        } else {
-            // check the role of requester
-            $subscriptions = Subscription::where('tenant_id', tenant()->id)->paginate(100);
-        }
-
-        return SubscriptionResource::collection($subscriptions);
     }
 
     /**
@@ -50,11 +40,9 @@ class SubscriptionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function activeSubscription()
+    public function show(TenantContact $tenantContact)
     {
-        $subscription = Subscription::where([['tenant_id', tenant()->id], ['status', 'active']])->first();
-
-        return new SubscriptionResource($subscription);
+        return new TenantContactResource($tenantContact);
     }
 
     /**
@@ -62,7 +50,7 @@ class SubscriptionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit(subscription $subscription)
+    public function edit(TenantContact $tenantContact)
     {
     }
 
@@ -71,8 +59,17 @@ class SubscriptionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, subscription $subscription)
+    public function updateTenantContact(Request $request, TenantContact $tenantContact)
     {
+        $tenantContact->contact->gender = $request->gender;
+        $tenantContact->contact->update();
+        $tenantContact->contact_name_by_tenant = $request->name;
+        $tenantContact->is_property_buyer = $request->is_property_buyer;
+        $tenantContact->is_property_owner = $request->is_property_owner;
+        $tenantContact->district_id = $request->district_id;
+        $tenantContact->update();
+
+        return new TenantContactResource($tenantContact);
     }
 
     /**
@@ -80,7 +77,7 @@ class SubscriptionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(subscription $subscription)
+    public function destroy(TenantContact $tenantContact)
     {
     }
 }

@@ -96,7 +96,7 @@ class OrderController extends Controller
                             'tenant_id' => $transaction->order->tenant_id,
                             'package_id' => $transaction->order->package_id,
                             'start_date' => now(),
-                            'end_date' => ('quarterly' === $transaction->order ? now()->addDays(30) : now()->addDays(365)),
+                            'end_date' => now()->addDays(14),
                             'status' => 'active',
                             'is_trial' => true,
                         ]
