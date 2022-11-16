@@ -4,12 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\SendSMSRequest;
+use App\Http\Requests\Api\Users\UserUpdateRequest;
 use App\Http\Requests\Api\VerifyRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\WorkspaceResource;
 use App\Models\SmsVerification;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 
@@ -41,7 +41,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(UserUpdateRequest $request)
     {
         auth()->user()->email = $request->email;
         auth()->user()->gender = $request->gender;
