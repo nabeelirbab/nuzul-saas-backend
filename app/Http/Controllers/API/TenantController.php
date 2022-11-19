@@ -43,7 +43,8 @@ class TenantController extends Controller
     public function setDefault(Tenant $tenant)
     {
         $m = TenantUser::where('user_id', auth()->user()->id)->where('tenant_id', $tenant->id)->first();
-        TenantUser::where('user_id', auth()->user()->id)->where('tenant_id', $tenant->id)->update(['is_default' => false]);
+
+        TenantUser::where('user_id', auth()->user()->id)->update(['is_default' => false]);
         $m->is_default = true;
         $m->update();
 
