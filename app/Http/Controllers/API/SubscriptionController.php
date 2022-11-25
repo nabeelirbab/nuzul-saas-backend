@@ -53,8 +53,9 @@ class SubscriptionController extends Controller
     public function activeSubscription()
     {
         $subscription = Subscription::where([['tenant_id', tenant()->id], ['status', 'active']])->first();
-
-        return new SubscriptionResource($subscription);
+        if ($subscription) {
+            return new SubscriptionResource($subscription);
+        }
     }
 
     /**
