@@ -67,7 +67,6 @@ class CreatePropertiesTable extends Migration
             $table->boolean('is_ac_installed')->nullable();
             $table->boolean('is_parking_shade')->nullable();
             $table->boolean('is_furnished')->nullable();
-            $table->boolean('is_sold')->default(false);
             $table->text('cover_image_url')->nullable();
             $table->timestamps();
         });

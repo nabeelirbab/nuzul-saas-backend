@@ -14,8 +14,8 @@ class PackageSeeder extends Seeder
     {
         Package::factory()->create(
             [
-                'name_ar' => 'Pro',
-                'name_en' => 'الخبير',
+                'name_en' => 'Pro',
+                'name_ar' => 'الخبير',
                 'price_quarterly' => 99,
                 'price_yearly' => 1100,
                 'tax' => 15.0,
@@ -25,8 +25,8 @@ class PackageSeeder extends Seeder
 
         Package::factory()->create(
             [
-                'name_ar' => 'Team',
-                'name_en' => 'الفريق',
+                'name_en' => 'Team',
+                'name_ar' => 'الفريق',
                 'price_quarterly' => 290,
                 'price_yearly' => 3500,
                 'tax' => 15.0,
@@ -36,8 +36,8 @@ class PackageSeeder extends Seeder
 
         Package::factory()->create(
             [
-                'name_ar' => 'Office',
-                'name_en' => 'المكتب',
+                'name_en' => 'Office',
+                'name_ar' => 'المكتب',
                 'price_quarterly' => 390,
                 'price_yearly' => 4700,
                 'tax' => 15.0,
@@ -47,8 +47,8 @@ class PackageSeeder extends Seeder
 
         Package::factory()->create(
             [
-                'name_ar' => 'Pro-Trial',
-                'name_en' => 'الخبير-تجربة',
+                'name_en' => 'Pro - Trial',
+                'name_ar' => 'الخبير - تجربة',
                 'price_quarterly' => 0,
                 'price_yearly' => 0,
                 'tax' => 0,
@@ -59,8 +59,8 @@ class PackageSeeder extends Seeder
 
         Package::factory()->create(
             [
-                'name_ar' => 'Team-Trial',
-                'name_en' => 'الفريق-تجربة',
+                'name_en' => 'Team - Trial',
+                'name_ar' => 'الفريق - تجربة',
                 'price_quarterly' => 0,
                 'price_yearly' => 0,
                 'tax' => 0,
@@ -71,8 +71,8 @@ class PackageSeeder extends Seeder
 
         Package::factory()->create(
             [
-                'name_ar' => 'Office-Trial',
-                'name_en' => 'المكتب-تجربة',
+                'name_en' => 'Office - Trial',
+                'name_ar' => 'المكتب - تجربة',
                 'price_quarterly' => 0,
                 'price_yearly' => 0,
                 'tax' => 0,

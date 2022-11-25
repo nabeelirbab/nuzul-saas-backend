@@ -7,6 +7,7 @@ use App\Http\Resources\TenantContactResource;
 use App\Models\Contact;
 use App\Models\Role;
 use App\Models\TenantContact;
+use App\Models\TenantUser;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -16,25 +17,29 @@ class ContactController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         if (Role::ADMIN === auth()->user()->role_id) {
             $tcs = TenantContact::paginate(100);
         } else {
-            // check the role of requester
-            $tcs = TenantContact::where('tenant_id', tenant()->id)->paginate(100);
+            $m = TenantUser::where('user_id', auth()->user()->id)->where('tenant_id', tenant()->id)->first();
+
+            if ($m) {
+                $name = $request->input('name');
+                if ($name) {
+                    $tcs = TenantContact::where('tenant_id', tenant()->id)->where('contact_name_by_tenant', 'LIKE', '%'.$name.'%')->paginate(100);
+                } else {
+                    $tcs = TenantContact::where('tenant_id', tenant()->id)->paginate(100);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'You are not authorized.',
+                    'errors' => [],
+                ], 401);
+            }
         }
 
         return TenantContactResource::collection($tcs);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
     }
 
     /**

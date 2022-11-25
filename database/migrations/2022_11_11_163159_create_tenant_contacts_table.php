@@ -4,14 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTenantContactTable extends Migration
+class CreateTenantContactsTable extends Migration
 {
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::create('tenant_contact', function (Blueprint $table) {
+        Schema::create('tenant_contacts', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->string('contact_name_by_tenant');
@@ -25,7 +25,7 @@ class CreateTenantContactTable extends Migration
             $table->boolean('is_property_buyer')->default(false);
             $table->boolean('is_property_owner')->default(false);
 
-            $table->bigInteger('district_id')->unsigned()->index();
+            $table->bigInteger('district_id')->unsigned()->nullable()->index();
             $table->foreign('district_id')->references('id')->on('districts')->unsigned();
 
             $table->unique(['contact_id', 'tenant_id']);

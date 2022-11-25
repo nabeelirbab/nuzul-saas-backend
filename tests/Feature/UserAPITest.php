@@ -18,7 +18,7 @@ final class UserAPITest extends TestCase
     {
         // login as a admin
         $this->companyOwnerLogin();
-        $response = $this->postJson('/api/me', ['name' => 'خالد', 'gender' => 'male']);
+        $response = $this->postJson('/api/me', ['email' => 'm@t.com', 'name' => 'خالد', 'gender' => 'male']);
         $response->assertSuccessful();
 
         $response->assertJsonStructure(

@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\TenantContactResource;
-use App\Models\TenantContact;
 use Illuminate\Http\Request;
 
-class TenantContactController extends Controller
+class DealDistrictController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -38,46 +36,44 @@ class TenantContactController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param \App\Models\DealDistrict $dealDistrict
+     *
      * @return \Illuminate\Http\Response
      */
-    public function show(TenantContact $tenantContact)
+    public function show(DealDistrict $dealDistrict)
     {
-        return new TenantContactResource($tenantContact);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
+     * @param \App\Models\DealDistrict $dealDistrict
+     *
      * @return \Illuminate\Http\Response
      */
-    public function edit(TenantContact $tenantContact)
+    public function edit(DealDistrict $dealDistrict)
     {
     }
 
     /**
      * Update the specified resource in storage.
      *
+     * @param \App\Models\DealDistrict $dealDistrict
+     *
      * @return \Illuminate\Http\Response
      */
-    public function updateTenantContact(Request $request, TenantContact $tenantContact)
+    public function update(Request $request, DealDistrict $dealDistrict)
     {
-        $tenantContact->contact->gender = $request->gender;
-        $tenantContact->contact->update();
-        $tenantContact->contact_name_by_tenant = $request->name;
-        $tenantContact->is_property_buyer = $request->is_property_buyer;
-        $tenantContact->is_property_owner = $request->is_property_owner;
-        $tenantContact->district_id = $request->district_id;
-        $tenantContact->update();
-
-        return new TenantContactResource($tenantContact);
     }
 
     /**
      * Remove the specified resource from storage.
      *
+     * @param \App\Models\DealDistrict $dealDistrict
+     *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TenantContact $tenantContact)
+    public function destroy(DealDistrict $dealDistrict)
     {
     }
 }

@@ -236,8 +236,13 @@ class OrderController extends Controller
             if ('pending_payment' === $order->status) {
                 $order->status = 'canceled';
                 $order->transactions()->update(['status' => 'canceled']);
+                $order->update();
+            } else {
+                return response()->json([
+                    'message' => 'You can only cancel pending orders',
+                    'errors' => [],
+                ], 422);
             }
-            $order->update();
         } else {
             return response()->json([
                 'message' => 'You are not authorized to cancel the order',
