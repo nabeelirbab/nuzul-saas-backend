@@ -25,8 +25,8 @@ class CreateTenantContactsTable extends Migration
             $table->boolean('is_property_buyer')->default(false);
             $table->boolean('is_property_owner')->default(false);
 
-            $table->bigInteger('district_id')->unsigned()->nullable()->index();
-            $table->foreign('district_id')->references('id')->on('districts')->unsigned();
+            $table->bigInteger('city_id')->unsigned()->nullable()->index();
+            $table->foreign('city_id')->references('id')->on('cities')->unsigned();
 
             $table->unique(['contact_id', 'tenant_id']);
 

@@ -82,7 +82,7 @@ class ContactController extends Controller
                     'tenant_id' => tenant()->id,
                     'is_property_buyer' => $request->is_property_buyer,
                     'is_property_owner' => $request->is_property_owner,
-                    'district_id' => $request->district_id ? $request->district_id : null,
+                    'city_id' => $request->city_id ? $request->city_id : null,
                 ]
             );
         } elseif (null !== $c) {
@@ -93,7 +93,7 @@ class ContactController extends Controller
                     'tenant_id' => tenant()->id,
                     'is_property_buyer' => $request->is_property_buyer,
                     'is_property_owner' => $request->is_property_owner,
-                    'district_id' => $request->district_id ? $request->district_id : null,
+                    'city_id' => $request->city_id ? $request->city_id : null,
                 ]
             );
         }

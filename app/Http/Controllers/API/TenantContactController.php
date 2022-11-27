@@ -67,7 +67,7 @@ class TenantContactController extends Controller
         $tenantContact->contact_name_by_tenant = $request->name;
         $tenantContact->is_property_buyer = $request->is_property_buyer;
         $tenantContact->is_property_owner = $request->is_property_owner;
-        $tenantContact->district_id = $request->district_id;
+        $tenantContact->city_id = $request->city_id;
         $tenantContact->update();
 
         return new TenantContactResource($tenantContact);

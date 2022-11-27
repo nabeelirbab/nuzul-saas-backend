@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\District;
+use App\Models\City;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
@@ -19,7 +19,7 @@ final class ContactAPITest extends TestCase
     public function testTenantCanCreateContact()
     {
         // create
-        $d = District::factory()->create();
+        $c = City::factory()->create();
         $user = $this->companyAccountLogin();
 
         $tenant = $user->tenants()->first();
@@ -32,7 +32,7 @@ final class ContactAPITest extends TestCase
             'email' => 'dd@google.com',
             'mobile_number' => '966501175111',
             'gender' => 'male',
-            'district_id' => $d->id,
+            'city_id' => $c->id,
             'is_property_buyer' => true,
             'is_property_owner' => false,
         ];

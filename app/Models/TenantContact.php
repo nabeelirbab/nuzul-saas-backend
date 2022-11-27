@@ -14,7 +14,7 @@ class TenantContact extends Model
         'contact_id',
         'is_property_buyer',
         'is_property_owner',
-        'district_id',
+        'city_id',
         'contact_name_by_tenant',
     ];
 
@@ -28,8 +28,8 @@ class TenantContact extends Model
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 
-    public function district()
+    public function city()
     {
-        return $this->belongsTo(District::class, 'district_id');
+        return $this->belongsTo(City::class, 'city_id');
     }
 }

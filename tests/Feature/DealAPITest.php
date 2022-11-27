@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\City;
 use App\Models\Contact;
 use App\Models\Deal;
 use App\Models\District;
@@ -23,6 +24,7 @@ final class DealAPITest extends TestCase
     public function testTenantCanCreateDeal()
     {
         // create
+        $c = City::factory()->create();
         $d = District::factory()->create();
         $user = $this->companyAccountLogin();
 
@@ -44,7 +46,7 @@ final class DealAPITest extends TestCase
             'contact_id' => $contact->id,
             'is_property_buyer' => false,
             'is_property_owner' => true,
-            'district_id' => $d->id,
+            'city_id' => $c->id,
         ]);
 
         $data = [
