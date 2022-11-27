@@ -20,17 +20,17 @@ class CityController extends Controller
         ]);
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
-     */
     public function index()
     {
         if (auth()->check() && Role::ADMIN === auth()->user()->role_id) {
             $cities = City::all();
         } else {
-            $cities = City::where('active', true)->get();
+            $country_id = request()->query('country_id');
+            if ($country_id) {
+                $cities = City::where([['active', true], ['country_id', $country_id]])->get();
+            } else {
+                $cities = City::where([['active', true]])->get();
+            }
         }
 
         return CityResource::collection($cities);
