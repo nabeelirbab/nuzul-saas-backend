@@ -19,6 +19,7 @@ class TenantContactResource extends JsonResource
             'id' => $this->id,
             'name' => $this->contact_name_by_tenant,
             'mobile_number' => $this->contact->mobile_number,
+            'email' => $this->contact->email,
             'is_property_buyer' => $this->is_property_buyer,
             'is_property_owner' => $this->is_property_owner,
             'city' => $this->city ? [
