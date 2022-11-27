@@ -8,6 +8,7 @@ use Tests\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class InvitationAPITest extends TestCase
@@ -77,7 +78,7 @@ final class InvitationAPITest extends TestCase
         URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
 
         $data = [
-            'mobile_number' => '966501175111',
+            'mobile_number' => '966501175311',
             'role_id' => 5,
         ];
 
@@ -86,6 +87,26 @@ final class InvitationAPITest extends TestCase
             $data
         );
         $response->assertSuccessful();
+    }
+
+    public function testCompanyOwnerCanNotSendAnInvitationForExistingMember()
+    {
+        $user = $this->companyAccountLogin();
+        $tenant = $user->tenants()->first();
+
+        tenancy()->initialize($tenant);
+        URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
+
+        $data = [
+            'mobile_number' => '966501175111',
+            'role_id' => 5,
+        ];
+
+        $response = $this->postJson(
+            '/api/invitations',
+            $data
+        );
+        $response->assertUnprocessable();
     }
 
     public function testCompanyOwnerCanCancelAnInvitation()

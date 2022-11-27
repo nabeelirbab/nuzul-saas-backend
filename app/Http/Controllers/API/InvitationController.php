@@ -8,6 +8,7 @@ use App\Http\Resources\InvitationResource;
 use App\Models\Invitation;
 use App\Models\Role;
 use App\Models\TenantUser;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class InvitationController extends Controller
@@ -49,6 +50,24 @@ class InvitationController extends Controller
      */
     public function store(StoreInvitationRequest $request)
     {
+        // check if user exists
+        $user = User::where([
+            ['mobile_number', $request->mobile_number],
+        ])->first();
+
+        if ($user) {
+            $tu = TenantUser::where([
+                ['user_id', $user->id],
+                ['tenant_id', tenant()->id],
+            ])->first();
+            if ($tu) {
+                return response()->json([
+                    'message' => 'The user is already a member.',
+                    'errors' => [],
+                ], 422);
+            }
+        }
+
         // check if invitee has invitation pending.
         $hasInvitation = Invitation::where([
             ['mobile_number', $request->mobile_number],
