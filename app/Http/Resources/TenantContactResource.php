@@ -27,6 +27,7 @@ class TenantContactResource extends JsonResource
                 'id' => $this->city->id,
                 'name_ar' => $this->city->name_ar,
                 'name_en' => $this->city->name_en,
+                'country_id' => $this->city->country_id,
             ] : null,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
