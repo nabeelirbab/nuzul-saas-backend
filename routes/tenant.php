@@ -73,7 +73,7 @@ Route::group([
                 Route::post('/', [DealController::class, 'store']);
                 Route::get('/', [DealController::class, 'index']);
                 Route::put('/{deal}', [DealController::class, 'update']);
-                // Route::get('/{tenantContact}', [TenantContactController::class, 'show']);
+                Route::get('/{deal}', [DealController::class, 'show']);
             });
 
             Route::group(['prefix' => 'members'], function () {

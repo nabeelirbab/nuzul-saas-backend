@@ -71,6 +71,7 @@ class DealController extends Controller
      */
     public function show(Deal $deal)
     {
+        return new DealResource($deal);
     }
 
     /**

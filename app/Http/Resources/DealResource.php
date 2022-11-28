@@ -22,6 +22,10 @@ class DealResource extends JsonResource
                 'name' => $this->contact->contact_name_by_tenant,
                 'mobile_number' => $this->contact->contact->mobile_number,
             ],
+            'sales_person' => $this->member ? [
+                'id' => $this->member->id,
+                'name' => $this->member->user->name,
+            ] : null,
             'property' => null,
             'stage' => $this->stage,
             'category' => $this->category,
@@ -39,6 +43,16 @@ class DealResource extends JsonResource
             'is_furnished' => $this->is_furnished,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'country' => $this->districts->first() ? [
+                'id' => $this->districts->first()->city->country->id,
+                'name_en' => $this->districts->first()->city->country->name_en,
+                'name_ar' => $this->districts->first()->city->country->name_ar,
+            ] : null,
+            'city' => $this->districts->first() ? [
+                'id' => $this->districts->first()->city->id,
+                'name_en' => $this->districts->first()->city->name_en,
+                'name_ar' => $this->districts->first()->city->name_ar,
+            ] : null,
             'districts' => $this->districts->map(function ($item) {
                 return [
                     'id' => $item->id,

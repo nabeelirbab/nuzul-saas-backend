@@ -16,6 +16,7 @@ class Invitation extends Model
         'mobile_number',
         'tenant_id',
         'company_role_id',
+        'status',
     ];
 
     public function tenant()

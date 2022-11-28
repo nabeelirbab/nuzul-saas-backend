@@ -15,6 +15,7 @@ class Deal extends Model
         'category',
         'purpose',
         'type',
+        'member_id',
     ];
 
     public function contact()
@@ -25,5 +26,10 @@ class Deal extends Model
     public function districts()
     {
         return $this->belongsToMany(District::class);
+    }
+
+    public function member()
+    {
+        return $this->belongsTo(TenantUser::class, 'member_id', 'id');
     }
 }

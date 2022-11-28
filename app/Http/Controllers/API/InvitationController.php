@@ -90,7 +90,7 @@ class InvitationController extends Controller
                 'expires_at' => now()->addDays(2),
             ]
         );
-
+        $invite->refresh();
         // send sms invitation to the person
         if (app()->environment(['production'])) {
             Unifonic::send(
