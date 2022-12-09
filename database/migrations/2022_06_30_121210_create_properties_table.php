@@ -16,7 +16,7 @@ class CreatePropertiesTable extends Migration
             $table->bigInteger('tenant_id')->unsigned()->index();
             $table->foreign('tenant_id')->references('id')->on('tenants')->unsigned();
             $table->enum('category', ['commercial', 'residential']);
-            $table->enum('listing_purpose', ['rent', 'sell', 'invest']);
+            $table->enum('purpose', ['rent', 'sell']);
             $table->enum('type', [
                 'villa',
                 'building_apartment',
@@ -25,9 +25,12 @@ class CreatePropertiesTable extends Migration
                 'duplex',
                 'townhouse',
                 'mansion',
-                'floor',
-                'storage',
+                'villa_floor',
+                'farm',
+                'istraha',
                 'store',
+                'office',
+                'storage',
                 'building',
             ]);
             $table->string('year_built')->nullable();
@@ -35,13 +38,11 @@ class CreatePropertiesTable extends Migration
             $table->double('selling_price')->nullable();
             $table->double('rent_price_monthly')->nullable();
             $table->double('rent_price_quarterly')->nullable();
-            $table->double('rent_price_half_yearly')->nullable();
-            $table->double('rent_price_yearly')->nullable();
-            $table->enum('style', ['classic', 'modern', 'mediterranean', 'andalusian', 'najdi', 'hejazi'])->nullable();
-            $table->bigInteger('district_id')->unsigned()->index();
+            $table->double('rent_price_semi_annually')->nullable();
+            $table->double('rent_price_annually')->nullable();
+            $table->bigInteger('district_id')->nullable()->unsigned()->index();
             $table->foreign('district_id')->references('id')->on('districts')->unsigned();
-            $table->double('plot_size')->nullable();
-            $table->double('gfa_size')->nullable();
+            $table->double('area')->nullable();
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
             $table->integer('number_of_floors')->nullable(); // how many floors in the building/villa?

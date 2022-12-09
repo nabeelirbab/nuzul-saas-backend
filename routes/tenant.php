@@ -6,6 +6,7 @@ use App\Http\Controllers\API\ContactController;
 use App\Http\Controllers\API\DealController;
 use App\Http\Controllers\API\InvitationController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\PropertyController;
 use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\TenantContactController;
 use App\Http\Controllers\API\TenantUserController;
@@ -80,6 +81,12 @@ Route::group([
                 Route::get('/', [TenantUserController::class, 'tenantMembers']);
                 Route::delete('/{member}', [TenantUserController::class, 'destroy']);
                 Route::put('/{member}/change-role', [TenantUserController::class, 'changeRole']);
+            });
+
+            Route::group(['prefix' => 'properties'], function () {
+                Route::get('/', [PropertyController::class, 'index']);
+                Route::post('/', [PropertyController::class, 'store']);
+                Route::put('/{property}', [PropertyController::class, 'update']);
             });
         });
     });
