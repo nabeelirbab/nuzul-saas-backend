@@ -87,6 +87,7 @@ Route::group([
                 Route::get('/', [PropertyController::class, 'index']);
                 Route::post('/', [PropertyController::class, 'store']);
                 Route::put('/{property}', [PropertyController::class, 'update']);
+                Route::get('/{property}', [PropertyController::class, 'show']);
             });
         });
     });
