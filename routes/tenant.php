@@ -9,6 +9,7 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\PropertyController;
 use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\TenantContactController;
+use App\Http\Controllers\API\TenantUploadController;
 use App\Http\Controllers\API\TenantUserController;
 use App\Http\Controllers\API\TransactionController;
 use Illuminate\Support\Facades\Route;
@@ -88,6 +89,13 @@ Route::group([
                 Route::post('/', [PropertyController::class, 'store']);
                 Route::put('/{property}', [PropertyController::class, 'update']);
                 Route::get('/{property}', [PropertyController::class, 'show']);
+                Route::put('/{property}/cover', [PropertyController::class, 'setCover']);
+                Route::put('/{property}/images', [PropertyController::class, 'setImages']);
+                Route::delete('/{property}/images', [PropertyController::class, 'removeImages']);
+            });
+
+            Route::group(['prefix' => 'uploads'], function () {
+                Route::post('/', [TenantUploadController::class, 'requestPresignedURL']);
             });
         });
     });

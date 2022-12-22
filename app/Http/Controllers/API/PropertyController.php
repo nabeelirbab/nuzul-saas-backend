@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PropertyResource;
 use App\Models\Property;
 use App\Models\Role;
+use App\Models\TenantUpload;
 use App\Models\TenantUser;
 use Illuminate\Http\Request;
 
@@ -98,19 +99,6 @@ class PropertyController extends Controller
             $request->number_of_floors = null;
             $request->area = null;
         }
-
-        // $li = $request->toArray();
-        // $li['user_id'] = auth()->user()->id;
-
-        // if ($listing = Listing::create($li)) {
-        //     if (isset($li['listing_images_urls'])) {
-        //         foreach ($li['listing_images_urls'] as $item) {
-        //             $upload = Upload::create(['url' => $item]);
-        //             $upload->reference()->associate($listing);
-        //             $upload->save();
-        //         }
-        //     }
-        // }
 
         $p = $request->toArray();
         $p['tenant_id'] = tenant()->id;
@@ -225,22 +213,49 @@ class PropertyController extends Controller
         $property->cover_image_url = $request->cover_image_url;
         $property->district_id = $request->district_id;
 
-        // $li = $request->toArray();
-        // $li['user_id'] = auth()->user()->id;
-
-        // if ($listing = Listing::create($li)) {
-        //     if (isset($li['listing_images_urls'])) {
-        //         foreach ($li['listing_images_urls'] as $item) {
-        //             $upload = Upload::create(['url' => $item]);
-        //             $upload->reference()->associate($listing);
-        //             $upload->save();
-        //         }
-        //     }
-        // }
 
         $property->update();
         $property->refresh();
 
         return new PropertyResource($property);
+    }
+
+    public function setCover(Request $request, Property $property)
+    {
+        $property->cover_image_url = $request->cover_image_url;
+
+        $property->update();
+        $property->refresh();
+
+        return new PropertyResource($property);
+    }
+
+    public function setImages(Request $request, Property $property)
+    {
+        $li = $request->toArray();
+
+        if (isset($li['images_urls'])) {
+            foreach ($li['images_urls'] as $item) {
+                $upload = TenantUpload::create(['url' => $item, 'tenant_id' => tenant()->id]);
+                $upload->reference()->associate($property);
+                $upload->save();
+            }
+        }
+
+        return new PropertyResource($property->load('images'));
+    }
+
+    public function removeImages(Request $request, Property $property)
+    {
+        // TODO: Auth
+        $li = $request->toArray();
+        if (isset($li['images_urls'])) {
+            foreach ($li['images_urls'] as $item) {
+                $upload = TenantUpload::where(['url' => $item], ['tenant_id' => tenant()->id]);
+                $upload->delete();
+            }
+        }
+
+        return new PropertyResource($property->load('images'));
     }
 }

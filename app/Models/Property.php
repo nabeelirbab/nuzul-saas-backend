@@ -20,4 +20,9 @@ class Property extends Model
     {
         return $this->belongsTo(District::class);
     }
+
+    public function images()
+    {
+        return $this->morphMany(TenantUpload::class, 'reference');
+    }
 }

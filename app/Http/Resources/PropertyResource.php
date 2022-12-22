@@ -67,10 +67,11 @@ class PropertyResource extends JsonResource
                 'name_ar' => $this->district->city->name_ar,
             ] : null,
             'district' => $this->district ? [
-                'id' => $this->district->city->id,
-                'name_en' => $this->district->city->name_en,
-                'name_ar' => $this->district->city->name_ar,
+                'id' => $this->district->id,
+                'name_en' => $this->district->name_en,
+                'name_ar' => $this->district->name_ar,
             ] : null,
+            'images' => $this->images,
         ];
     }
 }

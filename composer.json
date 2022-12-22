@@ -21,6 +21,7 @@
         "multicaret/laravel-unifonic": "^2.0",
         "nesbot/carbon": "^2.62",
         "optimus/bruno": "^6.0",
+        "ramsey/uuid": "^4.2",
         "spatie/laravel-sluggable": "^2.6",
         "stancl/tenancy": "^3.5",
         "vinkla/hashids": "^9.1"
