@@ -5,41 +5,34 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Uploads\Tenants\PresignedURLRequest;
 use App\Models\Upload;
-use Aws\Credentials\Credentials;
-use Aws\S3\S3Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
 
 class TenantUploadController extends Controller
 {
     public function requestPresignedURL(PresignedURLRequest $request)
     {
-        $access = new Credentials(env('AWS_ACCESS_KEY_ID'), env('AWS_SECRET_ACCESS_KEY'));
-        $s3Client = new S3Client([
-            'credentials' => $access,
-            'region' => env('AWS_DEFAULT_REGION'),
-            'version' => '2006-03-01',
+        $s3 = Storage::disk('s3');
+        $client = $s3->getDriver()->getAdapter()->getClient();
+        $expiry = '+10 minutes';
+
+        $uuid = Uuid::uuid4();
+        $key = 'tenants/'.tenant()->id.'/properties/'.$request->reference_id.'/'.$uuid.'.'.$request->extension;
+
+        $cmd = $client->getCommand('PutObject', [
+            'Bucket' => env('AWS_BUCKET'),
+            'Key' => $key,
         ]);
 
-        if ('property' === $request->model) {
-            $uuid = Uuid::uuid4();
-            $key = 'tenants/'.tenant()->id.'/properties/'.$request->reference_id.'/'.$uuid.'.'.$request->extension;
-            // Creating a presigned URL
-            $cmd = $s3Client->getCommand('putObject', [
-                'Bucket' => env('AWS_BUCKET'),
-                'Key' => $key,
-            ]);
-        }
+        $request = $client->createPresignedRequest($cmd, $expiry);
 
-        $awsRequest = $s3Client->createPresignedRequest($cmd, '+20 minutes');
-
-        // Get the actual presigned-url
-        $presignedUrl = (string) $awsRequest->getUri();
+        $presignedUrl = (string) $request->getUri();
 
         return response()->json([
             'presigned_url' => $presignedUrl,
-            'url' => $s3Client->getObjectUrl(env('AWS_BUCKET'), $key),
-        ], 200);
+            'url' => $client->getObjectUrl(env('AWS_BUCKET'), $key),
+        ], 201);
     }
 
     /**
