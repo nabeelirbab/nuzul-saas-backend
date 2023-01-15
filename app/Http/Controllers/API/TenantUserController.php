@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\MemberResource;
 use App\Models\Role;
 use App\Models\TenantUser;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TenantUserController extends Controller
@@ -15,8 +16,24 @@ class TenantUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function tenantMembers()
+    public function tenantMembers(Request $request)
     {
+        if ($name = $request->input('name')) {
+            $m = TenantUser::where('user_id', auth()->user()->id)->where('tenant_id', tenant()->id)->first();
+
+            if ($m) {
+                if ($name) {
+                    $ids = TenantUser::where('tenant_id', tenant()->id)->pluck('user_id');
+                    $userIds = User::whereIn('id', $ids)->where('name', 'LIKE', '%'.$name.'%')->pluck('id');
+                    $members = TenantUser::whereIn('id', $userIds)->paginate(100);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'You are not authorized.',
+                    'errors' => [],
+                ], 401);
+            }
+        }
         $members = TenantUser::where('user_id', '<>', auth()->user()->id)->where('tenant_id', tenant()->id)->paginate(100);
 
         return MemberResource::collection($members);

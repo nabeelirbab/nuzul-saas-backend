@@ -6,7 +6,7 @@ networks:
 services:
   nginx:
     image: nginx:stable-alpine
-    container_name: nginx
+    container_name: nginx-nuzul-backend-saas
     ports:
       - "8080:80"
     environment:
@@ -22,7 +22,7 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: mysql
+    container_name: mysql-nuzul-backend-saas
     restart: unless-stopped
     tty: true
     ports:
@@ -43,7 +43,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: php
+    container_name: php-nuzul-backend-saas
     volumes:
       - ../:/var/www/html
       # - /usr/local/etc/php/php.ini-development:/usr/local/etc/php/php.ini
@@ -55,7 +55,7 @@ services:
 
   composer:
     image: composer:latest
-    container_name: composer
+    container_name: composer-nuzul-backend-saas
     volumes:
       - ../:/var/www/html
     working_dir: /var/www/html
@@ -68,7 +68,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: artisan
+    container_name: artisan-nginx-nuzul-backend-saas
     volumes:
       - ../:/var/www/html
       - ./php.ini:/usr/local/etc/php/php.ini

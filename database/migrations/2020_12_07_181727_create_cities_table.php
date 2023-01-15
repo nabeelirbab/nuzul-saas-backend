@@ -19,7 +19,7 @@ class CreateCitiesTable extends Migration
             $table->foreign('region_id')->references('id')->on('regions')->unsigned();
             $table->string('name_ar');
             $table->string('name_en');
-            $table->boolean('active')->default(true);
+            $table->boolean('active')->default(false);
             $table->text('latitude');
             $table->text('longitude');
             $table->timestamps();

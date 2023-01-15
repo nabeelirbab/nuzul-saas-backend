@@ -82,7 +82,7 @@ class DealController extends Controller
     public function update(DealUpdateRequest $request, Deal $deal)
     {
         $deal->property_id = $request->property_id;
-        $deal->member_id = $request->member_id;
+        $deal->member_id = $request->sales_person_id;
         $deal->stage = $request->stage;
         $deal->min_price = $request->min_price;
         $deal->max_price = $request->max_price;
@@ -91,10 +91,7 @@ class DealController extends Controller
         $deal->bedrooms = $request->bedrooms;
         $deal->bathrooms = $request->bathrooms;
         $deal->facade = $request->facade;
-        $deal->is_kitchen_installed = $request->is_kitchen_installed;
-        $deal->is_ac_installed = $request->is_ac_installed;
-        $deal->is_furnished = $request->is_furnished;
-        $deal->districts()->sync($request->get('districts'));
+        $deal->districts()->sync($request->get('districts_ids'));
 
         // rent
         if ('rent' === $deal->purpose) {
@@ -110,9 +107,9 @@ class DealController extends Controller
         if ('land' === $deal->type) {
             $deal->bedrooms = null;
             $deal->bathrooms = null;
-            $deal->is_kitchen_installed = null;
-            $deal->is_ac_installed = null;
-            $deal->is_furnished = null;
+            $deal->is_kitchen_installed = false;
+            $deal->is_ac_installed = false;
+            $deal->is_furnished = false;
         }
 
         $deal->update();

@@ -15,7 +15,7 @@ class CreateRegionsTable extends Migration
             $table->increments('id');
             $table->string('name_ar');
             $table->string('name_en');
-            $table->boolean('active')->default(true);
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }

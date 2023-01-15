@@ -15,6 +15,10 @@ class CreatePropertiesTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('tenant_id')->unsigned()->index();
             $table->foreign('tenant_id')->references('id')->on('tenants')->unsigned();
+
+            $table->unsignedBigInteger('owner_id')->nullable()->index();
+            $table->foreign('owner_id')->references('id')->on('tenant_contacts');
+
             $table->enum('category', ['commercial', 'residential']);
             $table->enum('purpose', ['rent', 'sell']);
             $table->enum('type', [
@@ -68,6 +72,8 @@ class CreatePropertiesTable extends Migration
             $table->boolean('is_ac_installed')->nullable();
             $table->boolean('is_parking_shade')->nullable();
             $table->boolean('is_furnished')->nullable();
+            $table->boolean('length')->nullable();
+            $table->boolean('width')->nullable();
             $table->text('cover_image_url')->nullable();
             $table->timestamps();
         });

@@ -42,16 +42,15 @@ class DealUpdateRequest extends FormRequest
                 'nullable',
                 'gt:min_area',
             ],
-            'districts' => [
+            'districts_ids' => [
                 'nullable',
                 'array',
             ],
-            'districts.*' => [
+            'districts_ids.*' => [
                 'exists:districts,id',
             ],
             'rent_period' => [
                 'required_if:purpose,rent',
-                'in:daily,weekly,monthly,quarterly,semi_annually,annually',
             ],
             'stage' => [
                 'required',
