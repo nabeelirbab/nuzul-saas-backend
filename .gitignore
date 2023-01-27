@@ -15,7 +15,3 @@ yarn-error.log
 .DS_Store
 .php-cs-fixer.cache
 .phplint-cache
-/docker/*
-!/docker/docker-compose*yml
-!/docker/Dockerfile
-!/docker/nginx

@@ -1,0 +1,69 @@
+version: '3'
+
+networks:
+  laravel_local:
+
+services:
+  nginx:
+    container_name: nginx-nuzul-backend-saas
+    build:
+      context: ./
+      dockerfile: nginx.Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - "FPM_HOST=fpm"
+      - "FPM_PORT=9000"
+    volumes:
+      - ./storage/logs/:/var/log/nginx
+    networks:
+      - laravel_local
+
+  mysql:
+    container_name: mysql-nuzul-backend-saas
+    image: mysql:8.0
+    volumes:
+      - mysql:/var/lib/mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laraveluser
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - laravel_local
+
+  fpm:
+    container_name: php-nuzul-backend-saas
+    build:
+      context: ./
+      dockerfile: fpm.Dockerfile
+    volumes:
+      - ./:/var/www
+      # - /usr/local/etc/php/php.ini-development:/usr/local/etc/php/php.ini
+      - ./php.ini:/usr/local/etc/php/php.ini
+    environment:
+      - "DB_CONNECTION=mysql"
+      - "DB_HOST=mysql"
+      - "DB_PORT=3306"
+      - "DB_DATABASE=laravel"
+      - "DB_USERNAME=laraveluser"
+      - "DB_PASSWORD=secret"
+      - "APP_NAME=Nuzul"
+      - "APP_ENV=local"
+      - "APP_DEBUG=true"
+      - "APP_URL=http://localhost:8080"
+      - "LOG_CHANNEL=stderr"
+      - "BROADCAST_DRIVER=log"
+      - "QUEUE_CONNECTION=sync"
+    networks:
+      - laravel_local
+
+volumes:
+  mysql:
+    external: true

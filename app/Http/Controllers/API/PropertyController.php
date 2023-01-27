@@ -177,16 +177,25 @@ class PropertyController extends Controller
             $property->area = null;
         }
 
+        $property->tenant_contact_id = $request->tenant_contact_id;
+
+        $property->published = $request->published;
+
+        $property->length = $request->length;
+        $property->width = $request->width;
+
         $property->year_built = $request->year_built;
         $property->street_width = $request->street_width;
         $property->selling_price = $request->selling_price;
+
         $property->rent_price_monthly = $request->rent_price_monthly;
         $property->rent_price_quarterly = $request->rent_price_quarterly;
         $property->rent_price_annually = $request->rent_price_annually;
         $property->rent_price_semi_annually = $request->rent_price_semi_annually;
+
         $property->area = $request->area;
         $property->longitude = $request->longitude;
-        $property->longitude = $request->longitude;
+        $property->latitude = $request->latitude;
         $property->number_of_floors = $request->number_of_floors;
         $property->unit_floor_number = $request->unit_floor_number;
         $property->bathrooms = $request->bathrooms;
@@ -212,7 +221,6 @@ class PropertyController extends Controller
         $property->storage_rooms = $request->storage_rooms;
         $property->cover_image_url = $request->cover_image_url;
         $property->district_id = $request->district_id;
-
 
         $property->update();
         $property->refresh();

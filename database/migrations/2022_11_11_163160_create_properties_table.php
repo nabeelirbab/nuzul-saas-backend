@@ -16,11 +16,13 @@ class CreatePropertiesTable extends Migration
             $table->bigInteger('tenant_id')->unsigned()->index();
             $table->foreign('tenant_id')->references('id')->on('tenants')->unsigned();
 
-            $table->unsignedBigInteger('owner_id')->nullable()->index();
-            $table->foreign('owner_id')->references('id')->on('tenant_contacts');
+            $table->unsignedBigInteger('tenant_contact_id')->nullable()->index();
+            $table->foreign('tenant_contact_id')->references('id')->on('tenant_contacts');
 
             $table->enum('category', ['commercial', 'residential']);
+
             $table->enum('purpose', ['rent', 'sell']);
+
             $table->enum('type', [
                 'villa',
                 'building_apartment',
@@ -37,18 +39,25 @@ class CreatePropertiesTable extends Migration
                 'storage',
                 'building',
             ]);
+
             $table->string('year_built')->nullable();
             $table->integer('street_width')->nullable();
+
             $table->double('selling_price')->nullable();
+
             $table->double('rent_price_monthly')->nullable();
             $table->double('rent_price_quarterly')->nullable();
             $table->double('rent_price_semi_annually')->nullable();
             $table->double('rent_price_annually')->nullable();
+
             $table->bigInteger('district_id')->nullable()->unsigned()->index();
             $table->foreign('district_id')->references('id')->on('districts')->unsigned();
+
             $table->double('area')->nullable();
+
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
+
             $table->integer('number_of_floors')->nullable(); // how many floors in the building/villa?
             $table->integer('unit_floor_number')->nullable(); // if apartment which floor
             $table->integer('bedrooms')->nullable();
@@ -67,14 +76,20 @@ class CreatePropertiesTable extends Migration
             $table->integer('kitchens')->nullable();
             $table->integer('gardens')->nullable();
             $table->integer('parking_spots')->nullable();
+
             $table->enum('facade', ['north', 'east', 'south', 'west', 'north_east', 'north_west', 'south_east', 'south_west'])->nullable();
             $table->boolean('is_kitchen_installed')->nullable();
             $table->boolean('is_ac_installed')->nullable();
             $table->boolean('is_parking_shade')->nullable();
             $table->boolean('is_furnished')->nullable();
+
             $table->boolean('length')->nullable();
             $table->boolean('width')->nullable();
+
             $table->text('cover_image_url')->nullable();
+
+            $table->boolean('published')->default(false);
+
             $table->timestamps();
         });
     }

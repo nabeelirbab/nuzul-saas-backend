@@ -25,4 +25,9 @@ class Property extends Model
     {
         return $this->morphMany(TenantUpload::class, 'reference');
     }
+
+    public function owner()
+    {
+        return $this->belongsTo(TenantContact::class, 'tenant_contact_id', 'id');
+    }
 }
