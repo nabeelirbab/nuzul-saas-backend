@@ -26,7 +26,7 @@ class DealResource extends JsonResource
                 'id' => $this->member->id,
                 'name' => $this->member->user->name,
             ] : null,
-            'property' => null,
+            'property' => $this->property ? new PropertyResource($this->property) : null,
             'rent_period' => $this->rent_period,
             'stage' => $this->stage,
             'category' => $this->category,

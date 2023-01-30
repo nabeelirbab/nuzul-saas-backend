@@ -32,4 +32,9 @@ class Deal extends Model
     {
         return $this->belongsTo(TenantUser::class, 'member_id', 'id');
     }
+
+    public function property()
+    {
+        return $this->belongsTo(Property::class, 'property_id', 'id');
+    }
 }

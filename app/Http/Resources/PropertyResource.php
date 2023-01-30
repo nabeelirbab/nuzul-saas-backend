@@ -53,10 +53,12 @@ class PropertyResource extends JsonResource
             'is_ac_installed' => $this->is_ac_installed,
             'is_parking_shade' => $this->is_parking_shade,
             'is_furnished' => $this->is_furnished,
+            'published' => $this->published,
             'cover_image_url' => $this->cover_image_url,
 
             'width' => $this->width,
-            'height' => $this->height,
+            'length' => $this->length,
+
             'owner' => $this->owner ? [
                 'id' => $this->owner->id,
                 'name' => $this->owner->contact_name_by_tenant,

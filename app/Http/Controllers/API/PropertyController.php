@@ -188,6 +188,9 @@ class PropertyController extends Controller
         $property->street_width = $request->street_width;
         $property->selling_price = $request->selling_price;
 
+        $property->availability_status = $request->availability_status;
+        $property->availability_date = $request->availability_date;
+
         $property->rent_price_monthly = $request->rent_price_monthly;
         $property->rent_price_quarterly = $request->rent_price_quarterly;
         $property->rent_price_annually = $request->rent_price_annually;

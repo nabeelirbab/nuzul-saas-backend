@@ -23,6 +23,10 @@ class CreatePropertiesTable extends Migration
 
             $table->enum('purpose', ['rent', 'sell']);
 
+            $table->enum('availability_status', ['available', 'unavailable', 'reserved', 'sold', 'soon', 'rented'])->default('unavailable');
+
+            $table->date('availability_date')->nullable();
+
             $table->enum('type', [
                 'villa',
                 'building_apartment',
