@@ -8,6 +8,7 @@ use App\Models\Property;
 use App\Models\Role;
 use App\Models\TenantUpload;
 use App\Models\TenantUser;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PropertyController extends Controller
@@ -268,5 +269,38 @@ class PropertyController extends Controller
         }
 
         return new PropertyResource($property->load('images'));
+    }
+
+    public function propertiesTotal()
+    {
+        $d = Property::where('tenant_id', tenant()->id)->count();
+
+        return response()->json([
+            'data' => $d,
+        ], 200);
+    }
+
+    public function projectsTotal()
+    {
+        return response()->json([
+            'data' => 0,
+        ], 200);
+    }
+
+    public function propertiesGrowth()
+    {
+        $date = Carbon::now();
+        $array = [];
+        for ($i = 1; $i <= 12; ++$i) {
+            $count = Property::where('tenant_id', tenant()->id)->whereMonth('created_at', $i)
+                ->whereYear('created_at', 2023)
+                ->count()
+            ;
+            $array[$date->month($i)->format('F')] = $count;
+        }
+
+        return response()->json([
+            'data' => $array,
+        ], 200);
     }
 }

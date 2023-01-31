@@ -8,6 +8,7 @@ use App\Models\Contact;
 use App\Models\Role;
 use App\Models\TenantContact;
 use App\Models\TenantUser;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -103,39 +104,29 @@ class ContactController extends Controller
         return new TenantContactResource($tc);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Contact $contact)
+    public function clientsTotal()
     {
+        $tcs = TenantContact::where('tenant_id', tenant()->id)->count();
+
+        return response()->json([
+            'data' => $tcs,
+        ], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Contact $contact)
+    public function clientsGrowth()
     {
-    }
+        $date = Carbon::now();
+        $array = [];
+        for ($i = 1; $i <= 12; ++$i) {
+            $count = TenantContact::where('tenant_id', tenant()->id)->whereMonth('created_at', $i)
+                ->whereYear('created_at', 2023)
+                ->count()
+            ;
+            $array[$date->month($i)->format('F')] = $count;
+        }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Contact $contact)
-    {
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Contact $contact)
-    {
+        return response()->json([
+            'data' => $array,
+        ], 200);
     }
 }

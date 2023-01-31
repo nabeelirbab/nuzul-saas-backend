@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\City;
+use App\Models\TenantContact;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
@@ -40,6 +41,57 @@ final class ContactAPITest extends TestCase
         $response = $this->postJson(
             '/api/contacts',
             $data
+        );
+
+        $response->assertSuccessful();
+    }
+
+    /**
+     * As a Tenant, I should be able to get total contacts, so that I it could know how many clients I have.
+     */
+    public function testTenantCanGetTotalContacts()
+    {
+        // create
+        $c = City::factory()->create();
+        $user = $this->companyAccountLogin();
+
+        $tenant = $user->tenants()->first();
+
+        tenancy()->initialize($tenant);
+        URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
+
+        $data = [
+            'tenant_id' => $tenant->id,
+        ];
+
+        TenantContact::factory()->create($data);
+
+        $response = $this->getJson(
+            '/api/dashboard/clients/total'
+        );
+
+        $response->assertSuccessful();
+    }
+
+    public function testTenantCanGetContactsGrowth()
+    {
+        // create
+        $c = City::factory()->create();
+        $user = $this->companyAccountLogin();
+
+        $tenant = $user->tenants()->first();
+
+        tenancy()->initialize($tenant);
+        URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
+
+        $data = [
+            'tenant_id' => $tenant->id,
+        ];
+
+        TenantContact::factory()->create($data);
+
+        $response = $this->getJson(
+            '/api/dashboard/clients/growth'
         );
 
         $response->assertSuccessful();

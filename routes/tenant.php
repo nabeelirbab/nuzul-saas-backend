@@ -41,6 +41,20 @@ Route::group([
             //     return 'This is your saas application. The id of the current tenant is '.tenant('id');
             // });
             // dd(tenant());
+
+            Route::group(['prefix' => 'dashboard'], function () {
+                Route::get('/clients/total', [ContactController::class, 'clientsTotal']);
+                Route::get('/clients/growth', [ContactController::class, 'clientsGrowth']);
+
+                Route::get('/deals/total', [DealController::class, 'dealsTotal']);
+                Route::get('/deals/growth', [DealController::class, 'dealsGrowth']);
+                Route::get('/deals/stages', [DealController::class, 'dealsByStage']);
+
+                Route::get('/properties/total', [PropertyController::class, 'propertiesTotal']);
+                Route::get('/properties/growth', [PropertyController::class, 'propertiesGrowth']);
+
+                Route::get('/projects/total', [PropertyController::class, 'projectsTotal']);
+            });
             Route::group(['prefix' => 'orders'], function () {
                 Route::get('/', [OrderController::class, 'index']);
                 Route::get('/{order}', [OrderController::class, 'show']);

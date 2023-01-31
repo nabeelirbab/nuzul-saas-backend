@@ -9,6 +9,7 @@ use App\Http\Resources\DealResource;
 use App\Models\Deal;
 use App\Models\Role;
 use App\Models\TenantUser;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DealController extends Controller
@@ -115,5 +116,50 @@ class DealController extends Controller
         $deal->update();
 
         return new DealResource($deal);
+    }
+
+    public function dealsTotal()
+    {
+        $d = Deal::where('tenant_id', tenant()->id)->count();
+
+        return response()->json([
+            'data' => $d,
+        ], 200);
+    }
+
+    public function dealsByStage()
+    {
+        $new = Deal::where('tenant_id', tenant()->id)->where('stage', 'new')->count();
+        $visit = Deal::where('tenant_id', tenant()->id)->where('stage', 'visit')->count();
+        $negotiation = Deal::where('tenant_id', tenant()->id)->where('stage', 'negotiation')->count();
+        $won = Deal::where('tenant_id', tenant()->id)->where('stage', 'won')->count();
+        $lost = Deal::where('tenant_id', tenant()->id)->where('stage', 'lost')->count();
+
+        return response()->json([
+            'data' => [
+                'new' => $new,
+                'visit' => $visit,
+                'negotiation' => $negotiation,
+                'won' => $won,
+                'lost' => $lost,
+            ],
+        ], 200);
+    }
+
+    public function dealsGrowth()
+    {
+        $date = Carbon::now();
+        $array = [];
+        for ($i = 1; $i <= 12; ++$i) {
+            $count = Deal::where('tenant_id', tenant()->id)->whereMonth('created_at', $i)
+                ->whereYear('created_at', 2023)
+                ->count()
+            ;
+            $array[$date->month($i)->format('F')] = $count;
+        }
+
+        return response()->json([
+            'data' => $array,
+        ], 200);
     }
 }
