@@ -27,10 +27,14 @@ class ContactController extends Controller
 
             if ($m) {
                 $name = $request->input('name');
+                $type = $request->input('type');
                 if ($name) {
-                    $tcs = TenantContact::where('tenant_id', tenant()->id)->where('contact_name_by_tenant', 'LIKE', '%'.$name.'%')->paginate(100);
+                    $tcs = TenantContact::where('tenant_id', tenant()->id)->where('contact_name_by_tenant', 'LIKE', '%'.$name.'%');
+                    if ('owner' === $type) {
+                        $tcs = $tcs->where('is_property_owner', true);
+                    }
                 } else {
-                    $tcs = TenantContact::where('tenant_id', tenant()->id)->paginate(100);
+                    $tcs = TenantContact::where('tenant_id', tenant()->id);
                 }
             } else {
                 return response()->json([
@@ -40,7 +44,7 @@ class ContactController extends Controller
             }
         }
 
-        return TenantContactResource::collection($tcs);
+        return TenantContactResource::collection($tcs->paginate(100));
     }
 
     /**

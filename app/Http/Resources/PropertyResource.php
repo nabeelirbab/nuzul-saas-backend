@@ -56,6 +56,9 @@ class PropertyResource extends JsonResource
             'published' => $this->published,
             'cover_image_url' => $this->cover_image_url,
 
+            'availability_status' => $this->availability_status,
+            'availability_date' => $this->availability_date,
+
             'width' => $this->width,
             'length' => $this->length,
 
