@@ -14,23 +14,14 @@ class Order extends Model
     protected $fillable = [
         'tenant_id',
         'package_id',
-        'package_price_quarterly',
-        'package_price_yearly',
-        'package_tax',
-        'tax_amount',
-        'total_amount',
-        'period',
+        'type',
         'status',
+        'is_subscription',
     ];
 
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
-    }
-
-    public function package()
-    {
-        return $this->belongsTo(Package::class);
     }
 
     public function tenant()

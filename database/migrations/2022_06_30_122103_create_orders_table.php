@@ -15,14 +15,9 @@ class CreateOrdersTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('tenant_id')->index();
             $table->foreign('tenant_id')->references('id')->on('tenants');
-            $table->unsignedBigInteger('package_id')->index();
-            $table->foreign('package_id')->references('id')->on('packages');
-            $table->float('package_price_quarterly');
-            $table->float('package_price_yearly');
-            $table->float('package_tax');
-            $table->float('tax_amount');
-            $table->float('total_amount');
-            $table->enum('period', ['quarterly', 'yearly']);
+            $table->float('total_amount_without_tax')->default(0);
+            $table->float('total_amount_with_tax')->default(0);
+            $table->enum('type', ['one_time', 'subscription_trial', 'subscription_monthly', 'subscription_quarterly', 'subscription_yearly']);
             $table->enum('status', ['pending_payment', 'completed', 'canceled'])->default('pending_payment');
             $table->timestamps();
         });

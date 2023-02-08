@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Order;
-use App\Models\Package;
+use App\Models\Product;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
@@ -16,19 +16,42 @@ use Tests\TestCase;
 final class OrderAPITest extends TestCase
 {
     /**
-     * As a Company Owner, I should be able to select an available package and a period to make an order, so that I it could create a subscription.
+     * As a Company Owner, I should be able to select an available products and a period to make an order, so that I it could create a subscription.
+     */
+
+    /**
+     * As a Company Owner, I should be able to select an available products and a period to make an order, so that I it could create a subscription.
      */
     public function testOwnerCanCreateAnOrderForTrial()
     {
-        $package = Package::factory()->create(
+        $p = Product::factory()->create(
             [
-                'name_ar' => 'Gold-trial',
-                'name_en' => 'الذهبية-تجربة',
-                'price_quarterly' => 0,
-                'price_yearly' => 0,
-                'tax' => 0,
+                'type' => 'recurring',
+
+                'name_en' => 'Seat',
+                'name_ar' => 'مقعد',
+                'price' => 0,
+                'price_monthly_recurring' => 0,
+                'price_quarterly_recurring' => 100,
+                'price_yearly_recurring' => 0,
+                'tax_percentage' => 15,
                 'status' => 'published',
-                'is_trial' => true,
+                'is_private' => false,
+            ]
+        );
+
+        $p2 = Product::factory()->create(
+            [
+                'type' => 'recurring',
+                'name_en' => 'Seat',
+                'name_ar' => 'مقعد',
+                'price' => 0,
+                'price_monthly_recurring' => 0,
+                'price_quarterly_recurring' => 100,
+                'price_yearly_recurring' => 0,
+                'tax_percentage' => 15,
+                'status' => 'published',
+                'is_private' => false,
             ]
         );
 
@@ -41,7 +64,251 @@ final class OrderAPITest extends TestCase
         $response = $this->postJson(
             '/api/orders',
             [
-                'package_id' => $package->id,
+                'is_trial' => true,
+            ]
+        );
+
+        $response->assertSuccessful();
+        $response->assertJsonStructure(
+            [
+                'data' => [
+                    'id',
+                    'total_amount_without_tax',
+                    'total_amount_with_tax',
+                    'type',
+                    'status',
+                    'created_at',
+                    'updated_at',
+                    'transactions',
+                ],
+            ]
+        );
+        static::assertSame($response->json()['data']['total_amount_with_tax'], 0);
+        static::assertSame($response->json()['data']['total_amount_without_tax'], 0);
+        static::assertSame($response->json()['data']['type'], 'subscription_trial');
+        static::assertSame($response->json()['data']['status'], 'completed');
+    }
+
+    /**
+     * As a Company Owner, I should be able to select an available products and a period to make an order, so that I it could create a subscription.
+     */
+    public function testOwnerCanNotCreateAnOrderForMultiTrial()
+    {
+        $p = Product::factory()->create(
+            [
+                'type' => 'recurring',
+
+                'name_en' => 'Seat',
+                'name_ar' => 'مقعد',
+                'price' => 0,
+                'price_monthly_recurring' => 0,
+                'price_quarterly_recurring' => 100,
+                'price_yearly_recurring' => 0,
+                'tax_percentage' => 15,
+                'status' => 'published',
+                'is_private' => false,
+            ]
+        );
+
+        $p2 = Product::factory()->create(
+            [
+                'type' => 'recurring',
+                'name_en' => 'Seat',
+                'name_ar' => 'مقعد',
+                'price' => 0,
+                'price_monthly_recurring' => 0,
+                'price_quarterly_recurring' => 100,
+                'price_yearly_recurring' => 0,
+                'tax_percentage' => 15,
+                'status' => 'published',
+                'is_private' => false,
+            ]
+        );
+
+        $user = $this->companyAccountLogin();
+        $tenant = $user->tenants()->first();
+
+        tenancy()->initialize($tenant);
+        URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
+
+        $response = $this->postJson(
+            '/api/orders',
+            [
+                'is_trial' => true,
+            ]
+        );
+
+        $response->assertSuccessful();
+        $response->assertJsonStructure(
+            [
+                'data' => [
+                    'id',
+                    'total_amount_without_tax',
+                    'total_amount_with_tax',
+                    'type',
+                    'status',
+                    'created_at',
+                    'updated_at',
+                    'transactions',
+                ],
+            ]
+        );
+        static::assertSame($response->json()['data']['total_amount_with_tax'], 0);
+        static::assertSame($response->json()['data']['total_amount_without_tax'], 0);
+        static::assertSame($response->json()['data']['type'], 'subscription_trial');
+        static::assertSame($response->json()['data']['status'], 'completed');
+
+        $response = $this->postJson(
+            '/api/orders',
+            [
+                'is_trial' => true,
+            ]
+        );
+        // not allowing multi trials
+        $response->assertUnprocessable();
+    }
+
+    /**
+     * As a Company Owner, I should be able to select an available products and a period to make an order, so that I it could create a subscription.
+     */
+    public function testOwnerCanNotCreateAnOrderForUpgrade()
+    {
+        $p = Product::factory()->create(
+            [
+                'type' => 'recurring',
+                'name_en' => 'Seat',
+                'name_ar' => 'مقعد',
+                'price' => 0,
+                'price_monthly_recurring' => 0,
+                'price_quarterly_recurring' => 100,
+                'price_yearly_recurring' => 0,
+                'tax_percentage' => 15,
+                'status' => 'published',
+                'is_private' => false,
+            ]
+        );
+
+        $p2 = Product::factory()->create(
+            [
+                'type' => 'recurring',
+                'name_en' => 'Seat',
+                'name_ar' => 'مقعد',
+                'price' => 0,
+                'price_monthly_recurring' => 0,
+                'price_quarterly_recurring' => 100,
+                'price_yearly_recurring' => 0,
+                'tax_percentage' => 15,
+                'status' => 'published',
+                'is_private' => false,
+            ]
+        );
+
+        $user = $this->companyAccountLogin();
+        $tenant = $user->tenants()->first();
+
+        tenancy()->initialize($tenant);
+        URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
+
+        $response = $this->postJson(
+            '/api/orders',
+            [
+                'is_trial' => true,
+            ]
+        );
+
+        $response->assertSuccessful();
+        $response->assertJsonStructure(
+            [
+                'data' => [
+                    'id',
+                    'total_amount_without_tax',
+                    'total_amount_with_tax',
+                    'type',
+                    'status',
+                    'created_at',
+                    'updated_at',
+                    'transactions',
+                ],
+            ]
+        );
+        static::assertSame($response->json()['data']['total_amount_with_tax'], 0);
+        static::assertSame($response->json()['data']['total_amount_without_tax'], 0);
+        static::assertSame($response->json()['data']['type'], 'subscription_trial');
+        static::assertSame($response->json()['data']['status'], 'completed');
+
+        $response = $this->postJson(
+            '/api/orders',
+            [
+                'products' => [
+                    [
+                        'product_id' => $p->id,
+                        'qty' => 1,
+                    ],
+                    [
+                        'product_id' => $p2->id,
+                        'qty' => 2,
+                    ],
+                ],
+                'period' => 'quarterly',
+                'payment_method' => 'bank_transfer',
+            ]
+        );
+        // not allowing upgrade
+        $response->assertUnprocessable();
+    }
+
+    public function testOwnerCanCreateAPaidOrder()
+    {
+        $p = Product::factory()->create(
+            [
+                'type' => 'recurring',
+
+                'name_en' => 'Seat',
+                'name_ar' => 'مقعد',
+                'price' => 0,
+                'price_monthly_recurring' => 0,
+                'price_quarterly_recurring' => 100,
+                'price_yearly_recurring' => 0,
+                'tax_percentage' => 15,
+                'status' => 'published',
+                'is_private' => false,
+            ]
+        );
+
+        $p2 = Product::factory()->create(
+            [
+                'type' => 'recurring',
+                'name_en' => 'Seat',
+                'name_ar' => 'مقعد',
+                'price' => 0,
+                'price_monthly_recurring' => 0,
+                'price_quarterly_recurring' => 100,
+                'price_yearly_recurring' => 0,
+                'tax_percentage' => 15,
+                'status' => 'published',
+                'is_private' => false,
+            ]
+        );
+
+        $user = $this->companyAccountLogin();
+        $tenant = $user->tenants()->first();
+
+        tenancy()->initialize($tenant);
+        URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
+
+        $response = $this->postJson(
+            '/api/orders',
+            [
+                'products' => [
+                    [
+                        'product_id' => $p->id,
+                        'qty' => 1,
+                    ],
+                    [
+                        'product_id' => $p2->id,
+                        'qty' => 2,
+                    ],
+                ],
                 'period' => 'quarterly',
                 'payment_method' => 'bank_transfer',
             ]
@@ -52,140 +319,95 @@ final class OrderAPITest extends TestCase
             [
                 'data' => [
                     'id',
-                    'package_price_quarterly',
-                    'package_price_yearly',
-                    'package_tax',
-                    'tax_amount',
-                    'total_amount',
-                    'period',
+                    'total_amount_without_tax',
+                    'total_amount_with_tax',
+                    'type',
                     'status',
                     'created_at',
                     'updated_at',
+                    'transactions',
                 ],
             ]
         );
-
-        static::assertSame($response->json()['data']['package_price_quarterly'], 0);
-        static::assertSame($response->json()['data']['package_price_yearly'], 0);
-        static::assertSame($response->json()['data']['package_tax'], 0);
-        static::assertSame($response->json()['data']['tax_amount'], 0);
-        static::assertSame($response->json()['data']['total_amount'], 0);
-        static::assertSame($response->json()['data']['period'], 'quarterly');
-        static::assertSame($response->json()['data']['status'], 'completed');
+        static::assertSame($response->json()['data']['total_amount_with_tax'], 345);
+        static::assertSame($response->json()['data']['total_amount_without_tax'], 300);
+        static::assertSame($response->json()['data']['type'], 'subscription_quarterly');
+        static::assertSame($response->json()['data']['status'], 'pending_payment');
     }
 
-    public function testOwnerCanNOTCreateMultiplePendingOrders()
-    {
-        $package = Package::factory()->create(
-            [
-                'name_ar' => 'Gold-trial',
-                'name_en' => 'الذهبية-تجربة',
-                'price_quarterly' => 0,
-                'price_yearly' => 0,
-                'tax' => 0,
-                'status' => 'published',
-                'is_trial' => true,
-            ]
-        );
+    // /**
+    //  * As a Company Owner, I should be able to select an available package and a period to make an order, so that I it could create a subscription.
+    //  */
+    // public function testOwnerCanCreateAnOrderForTrial()
+    // {
+    //     $package = Package::factory()->create(
+    //         [
+    //             'name_ar' => 'Gold-trial',
+    //             'name_en' => 'الذهبية-تجربة',
+    //             'price_quarterly' => 0,
+    //             'price_yearly' => 0,
+    //             'tax' => 0,
+    //             'status' => 'published',
+    //             'is_trial' => true,
+    //         ]
+    //     );
 
-        $user = $this->companyAccountLogin();
-        $tenant = $user->tenants()->first();
+    //     $user = $this->companyAccountLogin();
+    //     $tenant = $user->tenants()->first();
 
-        tenancy()->initialize($tenant);
-        URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
+    //     tenancy()->initialize($tenant);
+    //     URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
 
-        $order = Order::factory()->yearly()->create(
-            [
-                'tenant_id' => $tenant->id,
-                'package_id' => $package->id,
-                'period' => 'quarterly',
-            ]
-        );
-        Transaction::factory()->create(
-            [
-                'tenant_id' => $tenant->id,
-                'order_id' => $order->id,
-                'total_amount' => $order->total_amount,
-                'status' => 'pending',
-                'payment_method' => 'bank_transfer',
-            ]
-        );
+    //     $response = $this->postJson(
+    //         '/api/orders',
+    //         [
+    //             'package_id' => $package->id,
+    //             'period' => 'quarterly',
+    //             'payment_method' => 'bank_transfer',
+    //         ]
+    //     );
 
-        $response = $this->postJson(
-            '/api/orders',
-            [
-                'package_id' => $package->id,
-                'period' => 'quarterly',
-                'payment_method' => 'bank_transfer',
-            ]
-        );
+    //     $response->assertSuccessful();
+    //     $response->assertJsonStructure(
+    //         [
+    //             'data' => [
+    //                 'id',
+    //                 'package_price_quarterly',
+    //                 'package_price_yearly',
+    //                 'package_tax',
+    //                 'tax_amount',
+    //                 'total_amount',
+    //                 'period',
+    //                 'status',
+    //                 'created_at',
+    //                 'updated_at',
+    //             ],
+    //         ]
+    //     );
 
-        $response->assertUnprocessable();
-    }
-
-    public function testOwnerCanNOTCreateOrdersWhenYouTheyHaveActiveSubscription()
-    {
-        $package = Package::factory()->create(
-            [
-                'name_ar' => 'Gold-trial',
-                'name_en' => 'الذهبية-تجربة',
-                'price_quarterly' => 0,
-                'price_yearly' => 0,
-                'tax' => 0,
-                'status' => 'published',
-                'is_trial' => true,
-            ]
-        );
-
-        $user = $this->companyAccountLogin();
-        $tenant = $user->tenants()->first();
-
-        $tenantId = $user->tenants()->first()->id;
-
-        tenancy()->initialize($tenant);
-        URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
-
-        $order = Order::factory()->yearly()->create(
-            [
-                'package_id' => $package->id,
-                'period' => 'quarterly',
-                'tenant_id' => $tenantId,
-            ]
-        );
-        Transaction::factory()->create(
-            [
-                'tenant_id' => $tenant->id,
-                'order_id' => $order->id,
-                'total_amount' => $order->total_amount,
-                'status' => 'pending',
-                'payment_method' => 'bank_transfer',
-            ]
-        );
-
-        $response = $this->postJson(
-            '/api/orders',
-            [
-                'package_id' => $package->id,
-                'period' => 'quarterly',
-                'tenant_id' => $tenantId,
-                'payment_method' => 'bank_transfer',
-            ]
-        );
-
-        $response->assertUnprocessable();
-    }
+    //     static::assertSame($response->json()['data']['package_price_quarterly'], 0);
+    //     static::assertSame($response->json()['data']['package_price_yearly'], 0);
+    //     static::assertSame($response->json()['data']['package_tax'], 0);
+    //     static::assertSame($response->json()['data']['tax_amount'], 0);
+    //     static::assertSame($response->json()['data']['total_amount'], 0);
+    //     static::assertSame($response->json()['data']['period'], 'quarterly');
+    //     static::assertSame($response->json()['data']['status'], 'completed');
+    // }
 
     public function testOwnerCanCancelPendingOrder()
     {
-        $package = Package::factory()->create(
+        $product = Product::factory()->create(
             [
-                'name_ar' => 'Gold',
-                'name_en' => 'الذهبية',
-                'price_quarterly' => 100,
-                'price_yearly' => 100,
-                'tax' => 0.15,
+                'type' => 'recurring',
+                'name_ar' => 'مقعد - تجريبي',
+                'name_en' => 'Seat - trial',
+                'price' => 0,
+                'price_monthly_recurring' => 0,
+                'price_quarterly_recurring' => 0,
+                'price_yearly_recurring' => 0,
+                'tax_percentage' => 0,
                 'status' => 'published',
-                'is_trial' => false,
+                'is_private' => false,
             ]
         );
 
@@ -197,18 +419,19 @@ final class OrderAPITest extends TestCase
         tenancy()->initialize($tenant);
         URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
 
-        $order = Order::factory()->yearly()->create(
+        $order = Order::factory()->create(
             [
-                'package_id' => $package->id,
-                'period' => 'quarterly',
                 'tenant_id' => $tenantId,
+                'type' => 'subscription_trial',
+                'status' => 'pending_payment',
+                'total_amount_with_tax' => 0,
             ]
         );
         Transaction::factory()->create(
             [
                 'tenant_id' => $tenant->id,
                 'order_id' => $order->id,
-                'total_amount' => $order->total_amount,
+                'total_amount_with_tax' => $order->total_amount_with_tax,
                 'status' => 'pending',
                 'payment_method' => 'bank_transfer',
             ]
@@ -223,15 +446,18 @@ final class OrderAPITest extends TestCase
 
     public function testOwnerCanCViewOrders()
     {
-        $package = Package::factory()->create(
+        $p = Product::factory()->create(
             [
-                'name_ar' => 'Gold',
-                'name_en' => 'الذهبية',
-                'price_quarterly' => 100,
-                'price_yearly' => 100,
-                'tax' => 0.15,
+                'type' => 'recurring',
+                'name_en' => 'Seat',
+                'name_ar' => 'مقعد',
+                'price' => 0,
+                'price_monthly_recurring' => 0,
+                'price_quarterly_recurring' => 100,
+                'price_yearly_recurring' => 0,
+                'tax_percentage' => 15,
                 'status' => 'published',
-                'is_trial' => false,
+                'is_private' => false,
             ]
         );
 
@@ -243,11 +469,12 @@ final class OrderAPITest extends TestCase
         tenancy()->initialize($tenant);
         URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
 
-        $order = Order::factory()->yearly()->create(
+        $order = Order::factory()->create(
             [
-                'package_id' => $package->id,
-                'period' => 'quarterly',
                 'tenant_id' => $tenantId,
+                'type' => 'subscription_trial',
+                'status' => 'pending_payment',
+                'total_amount_with_tax' => 0,
             ]
         );
 
@@ -255,7 +482,7 @@ final class OrderAPITest extends TestCase
             [
                 'tenant_id' => $tenant->id,
                 'order_id' => $order->id,
-                'total_amount' => $order->total_amount,
+                'total_amount_with_tax' => $order->total_amount_with_tax,
                 'status' => 'pending',
                 'payment_method' => 'bank_transfer',
             ]

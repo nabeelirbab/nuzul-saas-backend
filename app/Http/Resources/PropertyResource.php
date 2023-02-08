@@ -17,6 +17,7 @@ class PropertyResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'unit_number' => $this->unit_number,
             'category' => $this->category,
             'purpose' => $this->purpose,
             'type' => $this->type,
@@ -53,7 +54,8 @@ class PropertyResource extends JsonResource
             'is_ac_installed' => $this->is_ac_installed,
             'is_parking_shade' => $this->is_parking_shade,
             'is_furnished' => $this->is_furnished,
-            'published' => $this->published,
+            'published_on_app' => $this->published_on_app,
+            'published_on_website' => $this->published_on_website,
             'cover_image_url' => $this->cover_image_url,
 
             'availability_status' => $this->availability_status,

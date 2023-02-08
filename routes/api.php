@@ -47,7 +47,7 @@ Route::get('countries', [CountryController::class, 'index']);
 Route::get('cities', [CityController::class, 'index']);
 Route::get('districts', [DistrictController::class, 'index']);
 
-Route::get('packages', 'PackageController@index');
+Route::get('products', 'ProductController@index');
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix' => 'me'], function () {
@@ -69,9 +69,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::put('/{city}', [CityController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'packages'], function () {
-        Route::post('/', [PackagesController::class, 'store']);
-        Route::put('/{package}', [PackagesController::class, 'update']);
+    Route::group(['prefix' => 'products'], function () {
+        Route::post('/', [ProductController::class, 'store']);
+        Route::put('/{product}', [ProductController::class, 'update']);
     });
 
     Route::group(['prefix' => 'transactions'], function () {

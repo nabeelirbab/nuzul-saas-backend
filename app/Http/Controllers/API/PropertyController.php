@@ -101,6 +101,8 @@ class PropertyController extends Controller
             $request->area = null;
         }
 
+        $request->unit_number = rand(3333, 9999999);
+
         $p = $request->toArray();
         $p['tenant_id'] = tenant()->id;
 
@@ -178,9 +180,11 @@ class PropertyController extends Controller
             $property->area = null;
         }
 
+        $property->unit_number = $request->unit_number;
         $property->tenant_contact_id = $request->tenant_contact_id;
 
-        $property->published = $request->published;
+        $property->published_on_website = $request->published_on_website;
+        $property->published_on_app = $request->published_on_app;
 
         $property->length = $request->length;
         $property->width = $request->width;

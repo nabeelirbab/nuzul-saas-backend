@@ -7,8 +7,10 @@ use App\Http\Requests\Api\Orders\StoreOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\TransactionResource;
 use App\Models\Order;
-use App\Models\Package;
+use App\Models\OrderProduct;
+use App\Models\OrderSubscription;
 use App\Models\Payment;
+use App\Models\Product;
 use App\Models\Role;
 use App\Models\Subscription;
 use App\Models\Tenant;
@@ -40,116 +42,202 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        // retrieve package
-        $package = Package::find($request->package_id);
         $tenant = Tenant::find(tenant()->id);
 
-        // check if the tenant has active subscription.
+        // check if the tenant has an active subscription or not
+        // tenant has
         if ('0' !== (string) $tenant->subscriptions()->active()->count()) {
-            return response()->json([
-                'message' => 'You already have an active subscription.',
-                'errors' => [],
-            ], 422);
-        }
+            $tenant = Tenant::find(tenant()->id);
 
-        // check if the tenant doesn't have a previous pending order.
-        if ('0' !== (string) $tenant->orders->where('status', 'pending_payment')->count()) {
-            return response()->json([
-                'message' => 'You already have a pending order, to make a new order you must cancel it.',
-                'errors' => [],
-            ], 422);
-        }
+            $trialSubscription = Subscription::where([['is_trial', true], ['tenant_id', tenant()->id]])->first();
+            if ($request->is_trial && $trialSubscription) {
+                return response()->json([
+                    'message' => 'You can not start a trial more than once.',
+                    'errors' => [
+                    ],
+                ], 422);
+            }
 
-        // TODO: refactor check if package is published
-        if ('published' === $package->status) {
-            // TODO: refactor check if the package is trial
-            if ($package->is_trial) {
-                // TODO: refactor check if tenant had a trial before
-                if (!$tenant->subscriptions()->trial()->count()) {
-                    // check if payment of
-                    $orderData =
-                    [
-                        'tenant_id' => $tenant->id,
-                        'package_id' => $request->package_id,
-                        'package_price_quarterly' => $package->price_quarterly,
-                        'package_price_yearly' => $package->price_yearly,
-                        'package_tax' => $package->tax,
-                        'tax_amount' => 0,
-                        'total_amount' => 0,
-                        'period' => $request->period,
-                        'status' => 'completed',
-                    ];
-
-                    $order = Order::create($orderData);
-
-                    $transaction = Transaction::create([
-                        'tenant_id' => $order->tenant_id,
-                        'order_id' => $order->id,
-                        'total_amount' => 0,
-                        'status' => 'approved',
-                        'payment_method' => 'none',
-                    ]);
-
-                    // if package is trial. Subscription should start instantly.
-                    Subscription::create(
-                        [
-                            'tenant_id' => $transaction->order->tenant_id,
-                            'package_id' => $transaction->order->package_id,
-                            'start_date' => now(),
-                            'end_date' => now()->addDays(14),
-                            'status' => 'active',
-                            'is_trial' => true,
-                        ]
-                    );
-                } else {
+            // check if the tenant has an active trial subscription or not
+            if ('0' !== (string) $tenant->subscriptions()->activeTrial()->count()) {
+                if ($trialSubscription) {
                     return response()->json([
-                        'message' => 'You can not subscribe to a trial package more than once.',
+                        'message' => 'You can not upgrade at the moment, try again later.',
                         'errors' => [
-                            'package_id' => [
-                                'The provided package is incorrect.',
-                            ],
                         ],
                     ], 422);
                 }
             }
 
-            // not trail
-            if (!$package->is_trial) {
-                $taxAmount = 'quarterly' === $request->period ? ($package->tax * $package->price_quarterly / 100) : ($package->tax * $package->price_yearly / 100);
-                $totalAmount = 'quarterly' === $request->period ? ($package->tax * $package->price_quarterly / 100) + $package->price_quarterly : ($package->tax * $package->price_yearly / 100) + $package->price_yearly;
+        // if yes, get the order period tenant.activeSubscription.order.period
+        // get the qty wanted for the request order
+        // get the price based on the remaining days based on the period of the subscription
+        // create new order
+        // add the products into the order_product
+        // calculate the total and update order total amounts
+        // confirm the order
+        // create the transaction
+        // if the transaction successful
+        // update order status
+        // add the order intro order_subscription.
+        } else {
+            // tenant doesn't have
+            // if the user doesn't have active subscription
 
+            // check if the the order is trial.
+            if ($request->is_trial) {
+                // check if the customer had trials before
+                $trialSubscription = Subscription::where([['is_trial', true], ['tenant_id', tenant()->id]])->first();
+                if ($trialSubscription) {
+                    return response()->json([
+                        'message' => 'You can not start a trial more than once.',
+                        'errors' => [
+                        ],
+                    ], 422);
+                }
+
+                $p = Product::where('id', 1)->first();
+
+                // create new order
                 $orderData =
-                [
-                    'tenant_id' => $tenant->id,
-                    'package_id' => $request->package_id,
-                    'package_price_quarterly' => $package->price_quarterly,
-                    'package_price_yearly' => $package->price_yearly,
-                    'package_tax' => $package->tax,
-                    'tax_amount' => $taxAmount,
-                    'total_amount' => $totalAmount,
-                    'period' => $request->period,
-                    'status' => 'pending_payment',
-                ];
+                        [
+                            'tenant_id' => $tenant->id,
+                            'type' => 'subscription_trial',
+                            'status' => 'completed',
+                        ];
 
                 $order = Order::create($orderData);
+                $totalAmountWithoutTax = 0;
+                $totalAmountWithTax = 0;
+                // add the products into the order_product
 
+                for ($i = 1; $i <= 2; ++$i) {
+                    $op = OrderProduct::create([
+                        'order_id' => $order->id,
+                        'product_id' => 1,
+                        'product_original_price' => 0,
+                        'product_sale_price' => 0,
+                        'discount_percentage' => 0,
+                        'discount_amount' => 0,
+                        'product_tax_percentage' => 0,
+                        'product_tax_amount' => 0,
+                        'total_amount_without_tax' => 0,
+                        'total_amount_with_tax' => 0,
+                    ]);
+                }
+
+                // calculate the total and update order total amounts
+                $order->total_amount_without_tax = $totalAmountWithoutTax;
+                $order->total_amount_with_tax = $totalAmountWithTax;
+                $order->save();
+
+                // confirm the order
+                // create the transaction
                 $transaction = Transaction::create([
                     'tenant_id' => $order->tenant_id,
                     'order_id' => $order->id,
-                    'total_amount' => $totalAmount,
+                    'total_amount_with_tax' => $totalAmountWithTax,
+                    'status' => 'approved',
+                    'payment_method' => 'online',
+                ]);
+
+                // if the transaction successful
+                // update order status
+                // create a new subscription
+                $subscription = Subscription::create(
+                    [
+                        'tenant_id' => $transaction->order->tenant_id,
+                        'start_date' => now(),
+                        'end_date' => now()->addDays(30),
+                        'status' => 'active',
+                        'is_trial' => true,
+                    ]
+                );
+                // add the order into order_subscription.
+                OrderSubscription::create(['order_id' => $order->id, 'subscription_id' => $subscription->id]);
+            } else {
+                // validate if products are not private and published
+                foreach ($request->products as $product) {
+                    $p = Product::where('id', $product['product_id'])->first();
+
+                    if (true === (bool) $p->is_private) {
+                        return response()->json([
+                            'message' => 'You are not allowed.',
+                            'errors' => [],
+                        ], 422);
+                    }
+                    if ('published' !== $p->status) {
+                        return response()->json([
+                            'message' => 'You are not allowed.',
+                            'errors' => [],
+                        ], 422);
+                    }
+                    if ('quarterly' === $request->period) {
+                        $request->type = 'subscription_quarterly';
+                    }
+                    if ('yearly' === $request->period) {
+                        $request->type = 'subscription_yearly';
+                    }
+                }
+                // create new order
+                $orderData =
+                        [
+                            'tenant_id' => $tenant->id,
+                            'type' => $request->type,
+                            'status' => 'pending_payment',
+                        ];
+
+                $order = Order::create($orderData);
+                $totalAmountWithoutTax = 0;
+                $totalAmountWithTax = 0;
+                // add the products into the order_product
+                foreach ($request->products as $product) {
+                    $p = Product::where('id', $product['product_id'])->first();
+                    $originalPrice = 0;
+
+                    // get the price based on the selected period of the subscription
+                    if ('quarterly' === $request->period) {
+                        $originalPrice = $p->price_quarterly_recurring;
+                    }
+
+                    if ('yearly' === $request->period) {
+                        $originalPrice = $p->price_yearly_recurring;
+                    }
+
+                    // get the qty wanted for the request order
+                    for ($i = 1; $i <= $product['qty']; ++$i) {
+                        $op = OrderProduct::create([
+                            'order_id' => $order->id,
+                            'product_id' => $product['product_id'],
+                            'product_original_price' => $originalPrice,
+                            'product_sale_price' => $originalPrice,
+                            'discount_percentage' => 0,
+                            'discount_amount' => 0,
+                            'product_tax_percentage' => $p->tax_percentage,
+                            'product_tax_amount' => $originalPrice * ($p->tax_percentage / 100),
+                            'total_amount_without_tax' => $originalPrice,
+                            'total_amount_with_tax' => $originalPrice + ($originalPrice * ($p->tax_percentage / 100)),
+                        ]);
+
+                        $totalAmountWithoutTax = $totalAmountWithoutTax + $op->total_amount_without_tax;
+                        $totalAmountWithTax = $totalAmountWithTax + $op->total_amount_with_tax;
+                    }
+                }
+
+                // calculate the total and update order total amounts
+                $order->total_amount_without_tax = $totalAmountWithoutTax;
+                $order->total_amount_with_tax = $totalAmountWithTax;
+                $order->save();
+                // confirm the order
+                // create the transaction
+                $transaction = Transaction::create([
+                    'tenant_id' => $order->tenant_id,
+                    'order_id' => $order->id,
+                    'total_amount_with_tax' => $totalAmountWithTax,
                     'status' => 'pending',
                     'payment_method' => $request->payment_method,
                 ]);
             }
-        } else {
-            abort(422, [
-                'message' => 'Something went wrong.',
-                'errors' => [
-                    'package_id' => [
-                        'The provided package is incorrect.',
-                    ],
-                ],
-            ]);
         }
 
         return new OrderResource($order);
@@ -174,14 +262,22 @@ class OrderController extends Controller
             // create subscription
             $o = Order::find($payment->metadata['order_id']);
             if ('pending_payment' === $o->status) {
-                if ((float) ($payment->amount / 100) === $o->total_amount) {
+                if ((float) ($payment->amount / 100) === $o->total_amount_with_tax) {
                     $t = Transaction::find($payment->metadata['transaction_id']);
                     if ('pending' === $t->status) {
                         $t->status = 'approved';
                         $t->update();
                         $o->status = 'completed';
                         $o->update();
-                        Subscription::create(['tenant_id' => $o->tenant_id, 'package_id' => $o->package_id, 'start_date' => now(), 'end_date' => now()->addMonths(3), 'status' => 'active', 'is_trial' => false]);
+                        if ('subscription_quarterly' === $o->type) {
+                            $months = 3;
+                        }
+                        if ('subscription_yearly' === $o->type) {
+                            $months = 12;
+                        }
+                        $s = Subscription::create(['tenant_id' => $o->tenant_id, 'start_date' => now(), 'end_date' => now()->addMonths($months), 'status' => 'active', 'is_trial' => false]);
+                        // add the order into order_subscription.
+                        OrderSubscription::create(['order_id' => $o->id, 'subscription_id' => $s->id]);
                     }
                 }
             }

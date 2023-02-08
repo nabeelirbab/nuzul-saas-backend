@@ -16,7 +16,7 @@ class TransactionFactory extends Factory
     {
         return [
             'order_id' => Order::factory(),
-            'total_amount' => 0,
+            'total_amount_with_tax' => 0,
             'status' => 'pending',
             'payment_method' => 'bank_transfer',
         ];

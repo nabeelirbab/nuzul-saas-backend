@@ -23,6 +23,11 @@ class Subscription extends Model
         return $query->where('is_trial', true);
     }
 
+    public function scopeActiveTrial($query)
+    {
+        return $query->where([['status', 'active'], ['is_trial', true]]);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
@@ -33,8 +38,8 @@ class Subscription extends Model
         return $query->where('status', 'expired');
     }
 
-    public function package()
+    public function orders()
     {
-        return $this->belongsTo(Package::class);
+        return $this->belongsToMany(Order::class);
     }
 }

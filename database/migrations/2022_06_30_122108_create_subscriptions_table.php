@@ -15,8 +15,6 @@ class CreateSubscriptionsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('tenant_id')->index();
             $table->foreign('tenant_id')->references('id')->on('tenants');
-            $table->bigInteger('package_id')->unsigned()->index();
-            $table->foreign('package_id')->references('id')->on('packages')->unsigned();
             $table->timestamp('start_date');
             $table->timestamp('end_date');
             $table->enum('status', ['active', 'expired'])->default('active');

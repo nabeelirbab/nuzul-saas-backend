@@ -14,7 +14,7 @@ class Transaction extends Model
     protected $fillable = [
         'order_id',
         'tenant_id',
-        'total_amount',
+        'total_amount_with_tax',
         'status',
         'payment_method',
         'response',

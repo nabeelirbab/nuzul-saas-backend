@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
 use App\Http\Resources\TransactionResource;
+use App\Models\OrderSubscription;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -66,17 +67,27 @@ class TransactionController extends Controller
         $transaction->status = 'approved';
         $transaction->reference_number = $request->reference_number;
         $transaction->update();
+
+        // TODO: check if order is not a subscription and handle the logic
         // start creating subscription
+        $months = 0;
+        if ('subscription_quarterly' === $transaction->order->type) {
+            $months = 3;
+        }
+        if ('subscription_yearly' === $transaction->order->type) {
+            $months = 12;
+        }
         $s = Subscription::create(
             [
                 'tenant_id' => $transaction->order->tenant_id,
-                'package_id' => $transaction->order->package_id,
                 'start_date' => now(),
-                'end_date' => ('quarterly' === $transaction->order ? now()->addDays(30) : now()->addDays(365)),
+                'end_date' => now()->addDays($months),
                 'status' => 'active',
                 'is_trial' => false,
             ]
         );
+
+        OrderSubscription::create(['order_id' => $transaction->order->id, 'subscription_id' => $s->id]);
 
         return new TransactionResource($transaction);
     }

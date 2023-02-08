@@ -22,10 +22,17 @@ class SubscriptionResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'package' => [
-                'name_ar' => $this->package->name_ar,
-                'name_en' => $this->package->name_en,
-            ],
+            'orders' => $this->orders->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'total_amount_without_tax' => $item->total_amount_without_tax,
+                    'total_amount_with_tax' => $item->total_amount_with_tax,
+                    'type' => $item->type,
+                    'status' => $item->status,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            }),
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'status' => $this->status,

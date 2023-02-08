@@ -27,10 +27,25 @@ class StoreOrderRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'package_id' => 'required|exists:packages,id',
-            'period' => 'required|in:yearly,quarterly',
-            'payment_method' => 'required|in:bank_transfer,online',
-        ];
+        if (!$this->is_trial) {
+            return [
+                'products' => [
+                    'required',
+                    'array',
+                ],
+                'products.0.product_id' => [
+                    'required',
+                    'exists:products,id',
+                ],
+                'products.0.qty' => [
+                    'required',
+                    'gt:0',
+                ],
+                'period' => 'required|in:yearly,quarterly,one_time',
+                'payment_method' => 'required|in:bank_transfer,online',
+            ];
+        }
+
+        return [];
     }
 }

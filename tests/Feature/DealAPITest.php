@@ -100,6 +100,7 @@ final class DealAPITest extends TestCase
     {
         // create
         $d = District::factory()->create();
+        $c = City::factory()->create();
         $user = $this->companyAccountLogin();
 
         $tenant = $user->tenants()->first();
@@ -120,7 +121,7 @@ final class DealAPITest extends TestCase
             'contact_id' => $contact->id,
             'is_property_buyer' => false,
             'is_property_owner' => true,
-            'district_id' => $d->id,
+            'city_id' => $c->id,
         ]);
 
         $deal = Deal::create(
@@ -139,9 +140,10 @@ final class DealAPITest extends TestCase
             [
                 'tenant_id' => $tenant->id,
                 'category' => 'commercial',
-                'listing_purpose' => 'sell',
+                'purpose' => 'sell',
                 'type' => 'villa',
                 'district_id' => $d->id,
+                'unit_number' => 4,
             ]
         );
 

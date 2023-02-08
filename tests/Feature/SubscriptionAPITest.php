@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Package;
+use App\Models\Product;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
@@ -18,15 +18,18 @@ final class SubscriptionAPITest extends TestCase
      */
     public function testOwnerCanViewSubscriptions()
     {
-        $package = Package::factory()->create(
+        $p = Product::factory()->create(
             [
-                'name_ar' => 'Gold-trial',
-                'name_en' => 'الذهبية-تجربة',
-                'price_quarterly' => 0,
-                'price_yearly' => 0,
-                'tax' => 0,
+                'type' => 'recurring',
+                'name_en' => 'Seat',
+                'name_ar' => 'مقعد',
+                'price' => 0,
+                'price_monthly_recurring' => 0,
+                'price_quarterly_recurring' => 100,
+                'price_yearly_recurring' => 0,
+                'tax_percentage' => 15,
                 'status' => 'published',
-                'is_trial' => true,
+                'is_private' => false,
             ]
         );
 
@@ -39,9 +42,7 @@ final class SubscriptionAPITest extends TestCase
         $response = $this->postJson(
             '/api/orders',
             [
-                'package_id' => $package->id,
-                'period' => 'quarterly',
-                'payment_method' => 'bank_transfer',
+                'is_trial' => true,
             ]
         );
 
@@ -50,26 +51,16 @@ final class SubscriptionAPITest extends TestCase
             [
                 'data' => [
                     'id',
-                    'package_price_quarterly',
-                    'package_price_yearly',
-                    'package_tax',
-                    'tax_amount',
-                    'total_amount',
-                    'period',
+                    'total_amount_without_tax',
+                    'total_amount_with_tax',
+                    'type',
                     'status',
                     'created_at',
                     'updated_at',
+                    'transactions',
                 ],
             ]
         );
-
-        // static::assertSame($response->json()['data']['package_price_quarterly'], 0);
-        // static::assertSame($response->json()['data']['package_price_yearly'], 0);
-        // static::assertSame($response->json()['data']['package_tax'], 0);
-        // static::assertSame($response->json()['data']['tax_amount'], 0);
-        // static::assertSame($response->json()['data']['total_amount'], 0);
-        // static::assertSame($response->json()['data']['period'], 'quarterly');
-        // static::assertSame($response->json()['data']['status'], 'completed');
 
         $response = $this->getJson(
             '/api/subscriptions'
@@ -81,10 +72,16 @@ final class SubscriptionAPITest extends TestCase
                 'data' => [
                     '*' => [
                         'id',
-                        'package' => [
-                            'name_en',
-                            'name_ar',
-                        ],
+                        'orders' => [
+                            '*' => [
+                                'id',
+                                'total_amount_without_tax',
+                                'total_amount_with_tax',
+                                'type',
+                                'status',
+                                'created_at',
+                                'updated_at',
+                            ], ],
                         'start_date',
                         'end_date',
                         'status',

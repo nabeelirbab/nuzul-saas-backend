@@ -20,14 +20,20 @@ final class TransactionAPITest extends TestCase
     {
         $user = $this->companyAccountLogin();
         $tenant = $user->tenants()->first();
+        $tenantId = $user->tenants()->first()->id;
 
         $this->adminLogin();
-        $order = Order::factory()->yearly()->create();
+        $order = Order::factory()->create([
+            'tenant_id' => $tenantId,
+            'type' => 'subscription_trial',
+            'status' => 'pending_payment',
+            'total_amount_with_tax' => 0,
+        ]);
         Transaction::factory()->create(
             [
                 'tenant_id' => $tenant->id,
                 'order_id' => $order->id,
-                'total_amount' => $order->total_amount,
+                'total_amount_with_tax' => $order->total_amount_with_tax,
                 'status' => 'pending',
                 'payment_method' => 'bank_transfer',
             ]
@@ -45,20 +51,18 @@ final class TransactionAPITest extends TestCase
                 'data' => [
                     '*' => [
                         'id',
-                        'package_price_quarterly',
-                        'package_price_yearly',
-                        'package_tax',
-                        'tax_amount',
-                        'total_amount',
-                        'period',
+                        'total_amount_without_tax',
+                        'total_amount_with_tax',
+                        'type',
                         'status',
                         'created_at',
                         'updated_at',
+                        'transactions',
                         'transactions' => [
                             '*' => [
                                 'id',
                                 'order_id',
-                                'total_amount',
+                                'total_amount_with_tax',
                                 'payment_method',
                                 'response',
                                 'reference_number',
@@ -79,14 +83,20 @@ final class TransactionAPITest extends TestCase
     {
         $user = $this->companyAccountLogin();
         $tenant = $user->tenants()->first();
+        $tenantId = $user->tenants()->first()->id;
+
         $this->adminLogin();
-        $order = Order::factory()->yearly()->create();
+        $order = Order::factory()->create([
+            'tenant_id' => $tenantId,
+            'type' => 'subscription_trial',
+            'status' => 'pending_payment',
+            'total_amount_with_tax' => 0,
+        ]);
         $transaction = Transaction::factory()->create(
             [
                 'tenant_id' => $tenant->id,
-
                 'order_id' => $order->id,
-                'total_amount' => $order->total_amount,
+                'total_amount_with_tax' => $order->total_amount_with_tax,
                 'status' => 'pending',
                 'payment_method' => 'bank_transfer',
             ]
@@ -103,7 +113,7 @@ final class TransactionAPITest extends TestCase
                 'data' => [
                     'id',
                     'order_id',
-                    'total_amount',
+                    'total_amount_with_tax',
                     'status',
                     'payment_method',
                     'response',

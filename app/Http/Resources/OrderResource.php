@@ -17,12 +17,9 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'package_price_quarterly' => $this->package_price_quarterly,
-            'package_price_yearly' => $this->package_price_yearly,
-            'package_tax' => $this->package_tax,
-            'tax_amount' => $this->tax_amount,
-            'total_amount' => $this->total_amount,
-            'period' => $this->period,
+            'total_amount_without_tax' => $this->total_amount_without_tax,
+            'total_amount_with_tax' => $this->total_amount_with_tax,
+            'type' => $this->type,
             'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -59,6 +59,8 @@ class CreatePropertiesTable extends Migration
 
             $table->double('area')->nullable();
 
+            $table->string('unit_number');
+
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
 
@@ -92,7 +94,8 @@ class CreatePropertiesTable extends Migration
 
             $table->text('cover_image_url')->nullable();
 
-            $table->boolean('published')->default(false);
+            $table->boolean('published_on_website')->default(false);
+            $table->boolean('published_on_app')->default(false);
 
             $table->timestamps();
         });

@@ -28,41 +28,41 @@ class OrderFactory extends Factory
         ];
     }
 
-    public function quarterly()
-    {
-        $p = Package::factory()->create();
-        $taxAmount = $p->price_quarterly * $p->tax;
-        $totalAmount = $taxAmount + $p->price_quarterly;
+    // public function quarterly()
+    // {
+    //     $p = Package::factory()->create();
+    //     $taxAmount = $p->price_quarterly * $p->tax;
+    //     $totalAmount = $taxAmount + $p->price_quarterly;
 
-        return $this->state(function (array $attributes) use ($p, $taxAmount, $totalAmount) {
-            return [
-                'package_id' => $p->id,
-                'package_price_quarterly' => $p->price_quarterly,
-                'package_price_yearly' => $p->price_yearly,
-                'package_tax' => $p->tax,
-                'period' => 'quarterly',
-                'tax_amount' => $taxAmount,
-                'total_amount' => $totalAmount,
-            ];
-        });
-    }
+    //     return $this->state(function (array $attributes) use ($p, $taxAmount, $totalAmount) {
+    //         return [
+    //             'package_id' => $p->id,
+    //             'package_price_quarterly' => $p->price_quarterly,
+    //             'package_price_yearly' => $p->price_yearly,
+    //             'package_tax' => $p->tax,
+    //             'period' => 'quarterly',
+    //             'tax_amount' => $taxAmount,
+    //             'total_amount' => $totalAmount,
+    //         ];
+    //     });
+    // }
 
-    public function yearly()
-    {
-        $p = Package::factory()->create();
-        $taxAmount = $p->price_yearly * $p->tax;
-        $totalAmount = $taxAmount + $p->price_yearly;
+    // public function yearly()
+    // {
+    //     $p = Package::factory()->create();
+    //     $taxAmount = $p->price_yearly * $p->tax;
+    //     $totalAmount = $taxAmount + $p->price_yearly;
 
-        return $this->state(function (array $attributes) use ($p, $taxAmount, $totalAmount) {
-            return [
-                'package_id' => $p->id,
-                'package_price_quarterly' => $p->price_quarterly,
-                'package_price_yearly' => $p->price_yearly,
-                'package_tax' => $p->tax,
-                'period' => 'yearly',
-                'tax_amount' => $taxAmount,
-                'total_amount' => $totalAmount,
-            ];
-        });
-    }
+    //     return $this->state(function (array $attributes) use ($p, $taxAmount, $totalAmount) {
+    //         return [
+    //             'package_id' => $p->id,
+    //             'package_price_quarterly' => $p->price_quarterly,
+    //             'package_price_yearly' => $p->price_yearly,
+    //             'package_tax' => $p->tax,
+    //             'period' => 'yearly',
+    //             'tax_amount' => $taxAmount,
+    //             'total_amount' => $totalAmount,
+    //         ];
+    //     });
+    // }
 }
