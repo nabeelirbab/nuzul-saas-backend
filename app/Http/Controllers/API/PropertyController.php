@@ -100,9 +100,7 @@ class PropertyController extends Controller
             $request->number_of_floors = null;
             $request->area = null;
         }
-
         $request->unit_number = rand(3333, 9999999);
-
         $p = $request->toArray();
         $p['tenant_id'] = tenant()->id;
 

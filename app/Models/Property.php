@@ -14,6 +14,7 @@ class Property extends Model
         'category',
         'purpose',
         'type',
+        'unit_number',
     ];
 
     public function district()
