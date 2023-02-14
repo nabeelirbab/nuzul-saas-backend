@@ -250,9 +250,11 @@ class PropertyController extends Controller
 
         if (isset($li['images_urls'])) {
             foreach ($li['images_urls'] as $item) {
-                $upload = TenantUpload::create(['url' => $item, 'tenant_id' => tenant()->id]);
-                $upload->reference()->associate($property);
-                $upload->save();
+                if (!TenantUpload::where('url', $item)->first()) {
+                    $upload = TenantUpload::create(['url' => $item, 'tenant_id' => tenant()->id]);
+                    $upload->reference()->associate($property);
+                    $upload->save();
+                }
             }
         }
 
