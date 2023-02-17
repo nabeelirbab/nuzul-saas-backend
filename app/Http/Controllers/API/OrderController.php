@@ -197,15 +197,15 @@ class OrderController extends Controller
 
                     // get the price based on the selected period of the subscription
                     if ('quarterly' === $request->period) {
-                        $originalPrice = $p->price_quarterly_recurring;
+                        $originalPrice = $p->price_quarterly_recurring * 3;
                     }
 
                     if ('yearly' === $request->period) {
-                        $originalPrice = $p->price_yearly_recurring;
+                        $originalPrice = $p->price_yearly_recurring * 12;
                     }
 
                     // get the qty wanted for the request order
-                    for ($i = 1; $i <= $product['qty']; ++$i) {
+                    for ($i = 1; $i <= (int) $product['qty']; ++$i) {
                         $op = OrderProduct::create([
                             'order_id' => $order->id,
                             'product_id' => $product['product_id'],
