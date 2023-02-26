@@ -93,18 +93,17 @@ class InvitationController extends Controller
         $invite->refresh();
         // send sms invitation to the person
         if (app()->environment(['production'])) {
-            Unifonic::send(
+            \Unifonic::send(
                 $request->mobile_number,
-                'Your have been invited to join [company-name] team.
-            تمت دعوتك من قبل فريق
-
-            https://company.nuzul.app
-
+                'Your have been invited to join Nuzul team.
             Invitation expires after 48 hours.
-            تنتهي صلاحية الدعوة بعد 48 ساعة.
+            - Nuzul Business
 
-            Nuzul Business
-            نزل للأعمال'
+            تمت دعوتك للدخول لنزل،
+            تنتهي صلاحية الدعوة بعد 48 ساعة.
+            -نزل للأعمال
+
+            https://web.nuzul.app'
             );
         }
 
