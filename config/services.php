@@ -28,4 +28,11 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+
+    'unifonic' => [
+        'app_id' => env('UNIFONIC_APP_ID'),
+        'sender_id' => env('UNIFONIC_SENDER_ID'),
+        'account_email' => env('UNIFONIC_ACCOUNT_EMAIL'),
+        'account_password' => env('UNIFONIC_ACCOUNT_PASSWORD'),
+    ],
 ];
