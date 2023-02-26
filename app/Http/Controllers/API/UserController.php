@@ -79,7 +79,7 @@ class UserController extends Controller
         $verify->save();
 
         if (app()->environment(['production'])) {
-            Unifonic::send($request->mobile_number, 'Your code is: '.$code, 'Nuzul');
+            \Unifonic::send($request->mobile_number, 'Your code is: '.$code, 'Nuzul');
         }
 
         return response()->json($verify);
