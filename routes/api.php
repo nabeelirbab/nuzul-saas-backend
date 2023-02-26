@@ -5,6 +5,7 @@ use App\Http\Controllers\API\CountryController;
 use App\Http\Controllers\API\DistrictController;
 use App\Http\Controllers\API\InvitationController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\TenantController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserController;
@@ -47,7 +48,7 @@ Route::get('countries', [CountryController::class, 'index']);
 Route::get('cities', [CityController::class, 'index']);
 Route::get('districts', [DistrictController::class, 'index']);
 
-Route::get('products', 'ProductController@index');
+Route::get('products', [ProductController::class, 'index']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix' => 'me'], function () {

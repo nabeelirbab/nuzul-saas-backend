@@ -69,7 +69,7 @@ class OrderController extends Controller
                 }
             }
 
-        // if yes, get the order period tenant.activeSubscription.order.period
+            // if yes, get the order period tenant.activeSubscription.order.period
         // get the qty wanted for the request order
         // get the price based on the remaining days based on the period of the subscription
         // create new order
