@@ -236,10 +236,9 @@ class PropertyController extends Controller
 
     public function setCover(Request $request, Property $property)
     {
-        $property->availability_status = $property->availability_status;
         $property->cover_image_url = $request->cover_image_url;
 
-        $property->update();
+        $property->save();
         $property->refresh();
 
         return new PropertyResource($property);
