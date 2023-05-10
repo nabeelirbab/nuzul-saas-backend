@@ -43,15 +43,18 @@ COPY package*.json ./
 
 COPY composer.* ./
 
-RUN composer install --prefer-dist --no-scripts --no-autoloader && rm -rf /root/.composer
+RUN composer install --prefer-dist --no-scripts && rm -rf /root/.composer
 
 ENV TZ Asia/Riyadh
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 COPY php.ini $PHP_INI_DIR/php.ini
+COPY .env.example ./.env
+
 COPY fpm/zz-disable-access-logs.conf /usr/local/etc/php-fpm.d/zz-disable-access-logs.conf
 
 COPY . .
 
 RUN chown -R www-data:www-data /var/www/
 
+RUN php artisan key:gen
 RUN composer dump-autoload --no-scripts --optimize

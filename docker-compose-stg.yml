@@ -29,7 +29,7 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_DATABASE: laravel
+      MYSQL_DATABASE: nuzul_stg
       MYSQL_USER: laraveluser
       MYSQL_PASSWORD: secret
       MYSQL_ROOT_PASSWORD: secret
@@ -51,7 +51,7 @@ services:
       - "DB_CONNECTION=mysql"
       - "DB_HOST=mysql"
       - "DB_PORT=3306"
-      - "DB_DATABASE=laravel"
+      - "DB_DATABASE=nuzul_stg"
       - "DB_USERNAME=laraveluser"
       - "DB_PASSWORD=secret"
       - "APP_NAME=Nuzul"
@@ -66,4 +66,4 @@ services:
 
 volumes:
   mysql:
-    external: true
+    external: false

@@ -36,6 +36,13 @@ Route::group([
         InitializeTenancyByDomain::class,
         PreventAccessFromCentralDomains::class,
     ])->group(function () {
+        Route::group(['prefix' => 'public'], function () {
+            Route::group(['prefix' => 'properties'], function () {
+                Route::get('/', [PropertyController::class, 'publicIndex']);
+                Route::get('/{property}', [PropertyController::class, 'publicShow']);
+
+            });
+        });
         Route::group(['middleware' => ['auth:sanctum']], function () {
             // Route::get('/', function () {
             //     return 'This is your saas application. The id of the current tenant is '.tenant('id');

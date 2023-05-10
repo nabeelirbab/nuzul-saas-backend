@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PropertyResource;
+use App\Http\Resources\PublicPropertyResource;
 use App\Models\Property;
 use App\Models\Role;
 use App\Models\TenantUpload;
@@ -41,6 +42,18 @@ class PropertyController extends Controller
         }
 
         return PropertyResource::collection($p);
+    }
+
+    public function publicIndex()
+    {
+        $p = Property::where([['tenant_id', tenant()->id], ['published_on_website', true]])->paginate(100);
+
+        return PublicPropertyResource::collection($p);
+    }
+
+    public function publicShow(Property $property)
+    {
+        return new PublicPropertyResource($property);
     }
 
     /**
@@ -100,9 +113,10 @@ class PropertyController extends Controller
             $request->number_of_floors = null;
             $request->area = null;
         }
-        $request->unit_number = rand(3333, 9999999);
+
         $p = $request->toArray();
         $p['tenant_id'] = tenant()->id;
+        $p['unit_number'] = rand(3333, 9999999);
 
         $p = Property::create($p);
         $p->refresh();

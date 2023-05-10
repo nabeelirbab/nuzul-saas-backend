@@ -47,6 +47,7 @@ Route::group(['middleware' => ['TokenIsValid']], function () {
 Route::get('countries', [CountryController::class, 'index']);
 Route::get('cities', [CityController::class, 'index']);
 Route::get('districts', [DistrictController::class, 'index']);
+Route::post('public/tenants/status', [TenantController::class, 'getStatus']);
 
 Route::get('products', [ProductController::class, 'index']);
 
