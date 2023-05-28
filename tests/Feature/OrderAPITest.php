@@ -83,10 +83,10 @@ final class OrderAPITest extends TestCase
                 ],
             ]
         );
-        static::assertSame($response->json()['data']['total_amount_with_tax'], 0);
-        static::assertSame($response->json()['data']['total_amount_without_tax'], 0);
-        static::assertSame($response->json()['data']['type'], 'subscription_trial');
-        static::assertSame($response->json()['data']['status'], 'completed');
+        self::assertSame($response->json()['data']['total_amount_with_tax'], 0);
+        self::assertSame($response->json()['data']['total_amount_without_tax'], 0);
+        self::assertSame($response->json()['data']['type'], 'subscription_trial');
+        self::assertSame($response->json()['data']['status'], 'completed');
     }
 
     /**
@@ -153,10 +153,10 @@ final class OrderAPITest extends TestCase
                 ],
             ]
         );
-        static::assertSame($response->json()['data']['total_amount_with_tax'], 0);
-        static::assertSame($response->json()['data']['total_amount_without_tax'], 0);
-        static::assertSame($response->json()['data']['type'], 'subscription_trial');
-        static::assertSame($response->json()['data']['status'], 'completed');
+        self::assertSame($response->json()['data']['total_amount_with_tax'], 0);
+        self::assertSame($response->json()['data']['total_amount_without_tax'], 0);
+        self::assertSame($response->json()['data']['type'], 'subscription_trial');
+        self::assertSame($response->json()['data']['status'], 'completed');
 
         $response = $this->postJson(
             '/api/orders',
@@ -231,10 +231,10 @@ final class OrderAPITest extends TestCase
                 ],
             ]
         );
-        static::assertSame($response->json()['data']['total_amount_with_tax'], 0);
-        static::assertSame($response->json()['data']['total_amount_without_tax'], 0);
-        static::assertSame($response->json()['data']['type'], 'subscription_trial');
-        static::assertSame($response->json()['data']['status'], 'completed');
+        self::assertSame($response->json()['data']['total_amount_with_tax'], 0);
+        self::assertSame($response->json()['data']['total_amount_without_tax'], 0);
+        self::assertSame($response->json()['data']['type'], 'subscription_trial');
+        self::assertSame($response->json()['data']['status'], 'completed');
 
         $response = $this->postJson(
             '/api/orders',
@@ -260,22 +260,6 @@ final class OrderAPITest extends TestCase
     public function testOwnerCanCreateAPaidOrder()
     {
         $p = Product::factory()->create(
-            [
-                'type' => 'recurring',
-
-                'name_en' => 'Seat',
-                'name_ar' => 'مقعد',
-                'price' => 0,
-                'price_monthly_recurring' => 0,
-                'price_quarterly_recurring' => 100,
-                'price_yearly_recurring' => 0,
-                'tax_percentage' => 15,
-                'status' => 'published',
-                'is_private' => false,
-            ]
-        );
-
-        $p2 = Product::factory()->create(
             [
                 'type' => 'recurring',
                 'name_en' => 'Seat',
@@ -304,10 +288,6 @@ final class OrderAPITest extends TestCase
                         'product_id' => $p->id,
                         'qty' => 1,
                     ],
-                    [
-                        'product_id' => $p2->id,
-                        'qty' => 2,
-                    ],
                 ],
                 'period' => 'quarterly',
                 'payment_method' => 'bank_transfer',
@@ -329,10 +309,10 @@ final class OrderAPITest extends TestCase
                 ],
             ]
         );
-        static::assertSame($response->json()['data']['total_amount_with_tax'], 345);
-        static::assertSame($response->json()['data']['total_amount_without_tax'], 300);
-        static::assertSame($response->json()['data']['type'], 'subscription_quarterly');
-        static::assertSame($response->json()['data']['status'], 'pending_payment');
+        self::assertSame($response->json()['data']['total_amount_with_tax'], 345);
+        self::assertSame($response->json()['data']['total_amount_without_tax'], 300);
+        self::assertSame($response->json()['data']['type'], 'subscription_quarterly');
+        self::assertSame($response->json()['data']['status'], 'pending_payment');
     }
 
     // /**

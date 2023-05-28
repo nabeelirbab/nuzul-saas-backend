@@ -28,11 +28,11 @@ class DealUpdateRequest extends FormRequest
             'property_id' => [
                 'nullable',
                 new TenantPropertyRule($this),
-                'exists:tenant_user,id',
+                'exists:properties,id',
             ],
             'member_id' => [
                 'nullable',
-                'exists:properties,id',
+                'exists:tenant_user,id',
             ],
             'max_price' => [
                 'nullable',
