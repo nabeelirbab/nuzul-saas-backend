@@ -40,7 +40,9 @@ Route::group([
             Route::group(['prefix' => 'properties'], function () {
                 Route::get('/', [PropertyController::class, 'publicIndex']);
                 Route::get('/{property}', [PropertyController::class, 'publicShow']);
-
+            });
+            Route::group(['prefix' => 'deals'], function () {
+                Route::post('/', [DealController::class, 'storeWebsiteDeal']);
             });
         });
         Route::group(['middleware' => ['auth:sanctum']], function () {

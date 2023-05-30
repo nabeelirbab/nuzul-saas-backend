@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Deals\DealStoreRequest;
 use App\Http\Requests\Api\Deals\DealUpdateRequest;
 use App\Http\Resources\DealResource;
+use App\Models\Contact;
 use App\Models\Deal;
+use App\Models\Property;
 use App\Models\Role;
 use App\Models\TenantUser;
 use Carbon\Carbon;
@@ -60,6 +62,61 @@ class DealController extends Controller
                 'type' => $request->type,
             ]
         );
+        $d->refresh();
+
+        return new DealResource($d);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function storeWebsiteDeal(Request $request)
+    {
+        // let's check if contact exist by mobile number.
+        $c = Contact::where('mobile_number', $request->mobile_number)->first();
+
+        if (null === $c) {
+            $c = Contact::create(
+                [
+                    'name' => $request->name,
+                    'email' => $request->email ? $request->email : null,
+                    'mobile_number' => $request->mobile_number,
+                    'gender' => $request->gender ? $request->gender : null,
+                ]
+            );
+
+            $tc = TenantContact::create(
+                [
+                    'contact_name_by_tenant' => $request->name,
+                    'contact_id' => $c->id,
+                    'tenant_id' => tenant()->id,
+                ]
+            );
+        } elseif (null !== $c) {
+            $tc = TenantContact::create(
+                [
+                    'contact_name_by_tenant' => $request->name,
+                    'contact_id' => $c->id,
+                    'tenant_id' => tenant()->id,
+                ]
+            );
+        }
+
+        $p = Property::find($request->property_id);
+
+        $d = Deal::create(
+            [
+                'tenant_contact_id' => $tc->id,
+                'tenant_id' => tenant()->id,
+                'category' => $p->category,
+                'purpose' => $p->purpose,
+                'type' => $p->type,
+                'property_id' => $p->id,
+            ]
+        );
+
         $d->refresh();
 
         return new DealResource($d);
