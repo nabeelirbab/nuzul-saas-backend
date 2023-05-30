@@ -7,6 +7,7 @@ use App\Http\Requests\Api\Deals\DealStoreRequest;
 use App\Http\Requests\Api\Deals\DealUpdateRequest;
 use App\Http\Resources\DealResource;
 use App\Models\Contact;
+use App\Models\TenantContact;
 use App\Models\Deal;
 use App\Models\Property;
 use App\Models\Role;
@@ -74,6 +75,7 @@ class DealController extends Controller
      */
     public function storeWebsiteDeal(Request $request)
     {
+        // dd("sadasdas");
         // let's check if contact exist by mobile number.
         $c = Contact::where('mobile_number', $request->mobile_number)->first();
 
@@ -105,7 +107,6 @@ class DealController extends Controller
         }
 
         $p = Property::find($request->property_id);
-
         $d = Deal::create(
             [
                 'tenant_contact_id' => $tc->id,
