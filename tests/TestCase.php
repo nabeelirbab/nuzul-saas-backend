@@ -182,7 +182,7 @@ abstract class TestCase extends BaseTestCase
         $tenant->users()->attach($user->id, ['company_role_id' => Role::COMPANY_OWNER]);
 
         $centralDomains = explode(',', env('CENTRAL_DOMAINS'));
-        $tenant->domains()->create(['domain' => readable_random_string().$tenant->id.'.'.$centralDomains[1]]);
+        $tenant->domains()->create(['domain' => readable_random_string().$tenant->id.'.'.$centralDomains[0]]);
 
         return Sanctum::actingAs($user);
     }
