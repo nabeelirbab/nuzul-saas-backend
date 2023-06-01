@@ -94,6 +94,88 @@ final class DealAPITest extends TestCase
     }
 
     /**
+    * As a Tenant, I should be able to create new public deal, so that I it could find a matching property.
+     */        
+    public function testStoreWebsiteDeal()
+    {
+
+        $user = $this->companyAccountLogin();
+
+        $tenant = $user->tenants()->first();
+
+        tenancy()->initialize($tenant);
+        URL::forceRootUrl('http://'.$tenant->domains[0]['domain']);
+
+        $contact = Contact::factory()->create();
+
+        $tc = TenantContact::factory()->create([
+            'contact_name_by_tenant' => 'Nabeel',
+            'tenant_id' => $tenant->id,
+            'contact_id' => $contact->id,
+        ]);
+
+        $property = Property::factory()->create([
+            "tenant_id" => $tenant->id,
+            "tenant_contact_id" => $tc->id,
+            "category" => "commercial",
+            "purpose" => "rent",
+            "availability_status" => "unavailable",
+            "availability_date" => null,
+            "type" => "istraha",
+
+        ]);
+         // dd($property);
+        $data = [
+            "name" => "nabeel",
+            "email" => "nabeel@email.com",
+            "mobile_number" => "966501111111",
+            "gender" => "male",
+            'tenant_contact_id' => $tc->id,
+            'tenant_id' => $tenant->id,
+            'category' => $property->category,
+            'purpose' => $property->purpose,
+            'type' => 'villa',
+            'property_id' => $property->id
+        ];
+
+        $response = $this->postJson(
+            '/api/public/deals',
+            $data
+        );
+
+        $response->assertJsonStructure(
+            [
+                'data' => [
+                    'contact' => [
+                        'id',
+                        'name',
+                        'mobile_number',
+                    ],
+                    'property',
+                    'stage',
+                    'category',
+                    'purpose',
+                    'type',
+                    'min_price',
+                    'max_price',
+                    'min_area',
+                    'max_area',
+                    'bedrooms',
+                    'bathrooms',
+                    'facade',
+                    'is_kitchen_installed',
+                    'is_ac_installed',
+                    'is_furnished',
+                    'districts',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]
+        );
+
+        $response->assertSuccessful();
+    }
+    /**
      * As a Tenant, I should be able to update a deal, so that I it could find a matching property.
      */
     public function testTenantCanUpdateDeal()
