@@ -93,7 +93,7 @@ class AuthController extends Controller
 
         $centralDomains = explode(',', env('CENTRAL_DOMAINS'));
 
-        $tenant->domains()->create(['domain' => readable_random_string().$tenant->id.'.'.$centralDomains[0]]);
+        $tenant->domains()->create(['domain' => readable_random_string().$tenant->id.'.'.$centralDomains[1]]);
 
         $token = $user->createToken(time());
 
