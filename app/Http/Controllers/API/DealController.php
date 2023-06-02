@@ -7,10 +7,10 @@ use App\Http\Requests\Api\Deals\DealStoreRequest;
 use App\Http\Requests\Api\Deals\DealUpdateRequest;
 use App\Http\Resources\DealResource;
 use App\Models\Contact;
-use App\Models\TenantContact;
 use App\Models\Deal;
 use App\Models\Property;
 use App\Models\Role;
+use App\Models\TenantContact;
 use App\Models\TenantUser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -75,7 +75,6 @@ class DealController extends Controller
      */
     public function storeWebsiteDeal(Request $request)
     {
-        // dd("sadasdas");
         // let's check if contact exist by mobile number.
         $c = Contact::where('mobile_number', $request->mobile_number)->first();
 
@@ -112,7 +111,7 @@ class DealController extends Controller
                 'tenant_contact_id' => $tc->id,
                 'tenant_id' => tenant()->id,
                 'category' => $p->category,
-                'purpose' => $p->purpose,
+                'purpose' => 'sell' === $p->purpose ? 'buy' : 'rent',
                 'type' => $p->type,
                 'property_id' => $p->id,
             ]
