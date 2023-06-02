@@ -10,7 +10,7 @@ services:
       context: ./
       dockerfile: nginx.Dockerfile
     ports:
-      - "8080:80"
+      - "8087:80"
     environment:
       - "FPM_HOST=fpm"
       - "FPM_PORT=9000"
@@ -27,7 +27,7 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "3307:3306"
+      - "3387:3306"
     environment:
       MYSQL_DATABASE: nuzul_stg
       MYSQL_USER: laraveluser
