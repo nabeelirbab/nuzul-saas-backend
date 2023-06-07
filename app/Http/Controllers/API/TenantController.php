@@ -74,8 +74,14 @@ class TenantController extends Controller
         $domain = $request->subdomain.'.'.$centralDomains[1];
 
         if (Domain::where('domain', $domain)->exists()) {
+            $tenant = Domain::where('domain', $domain)->first()->tenant;
+            $tenant = new TenantResource($tenant);
+
             return response()->json([
                 'message' => 'tenant exists',
+                'data' => [
+                    'tenant' => $tenant,
+                ],
                 'errors' => [],
             ], 200);
         }
