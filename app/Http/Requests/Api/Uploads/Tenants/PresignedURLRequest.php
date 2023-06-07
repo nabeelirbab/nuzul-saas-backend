@@ -15,7 +15,7 @@ class PresignedURLRequest extends FormRequest
     {
         return [
             'model' => 'required|in:property,tenant,user',
-            'reference_id' => 'required',
+            'reference_id' => 'required_if:model,property,user',
             'extension' => 'required|in:png,jpg,jpeg',
         ];
     }

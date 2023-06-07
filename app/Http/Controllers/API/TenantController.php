@@ -85,4 +85,14 @@ class TenantController extends Controller
             'errors' => [],
         ], 404);
     }
+
+    public function setLogo(Request $request, Tenant $tenant)
+    {
+        $tenant->logo_url = $request->logo_url;
+
+        $tenant->save();
+        $tenant->refresh();
+
+        return new TenantResource($tenant);
+    }
 }

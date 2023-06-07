@@ -18,7 +18,12 @@ class TenantUploadController extends Controller
         $expiry = '+10 minutes';
 
         $uuid = Uuid::uuid4();
-        $key = 'tenants/'.tenant()->id.'/properties/'.$request->reference_id.'/'.$uuid.'.'.$request->extension;
+        if ('property' === $request->model) {
+            $key = 'tenants/'.tenant()->id.'/properties/'.$request->reference_id.'/'.$uuid.'.'.$request->extension;
+        }
+        if ('tenant' === $request->model) {
+            $key = 'tenants/'.tenant()->id.'/logos/'.$request->reference_id.'/'.$uuid.'.'.$request->extension;
+        }
 
         $cmd = $client->getCommand('PutObject', [
             'Bucket' => env('AWS_BUCKET'),

@@ -21,6 +21,7 @@ class WorkspaceResource extends JsonResource
             'is_default' => (bool) $this->pivot->is_default,
             'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
+            'logo_url' => $this->logo_url,
             'company_role' => [
                 'role_id' => $this->pivot->role->id,
                 'name_ar' => $this->pivot->role->name_ar,

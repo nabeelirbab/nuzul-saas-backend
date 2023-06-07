@@ -90,6 +90,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/', [UserController::class, 'getUserWorkspaces']);
         Route::get('/{tenant}', [TenantController::class, 'show']);
         Route::put('/{tenant}', [TenantController::class, 'update']);
+        Route::put('/{tenant}/set-logo', [TenantController::class, 'setLogo']);
+        Route::put('/{tenant}/remove-logo', [TenantController::class, 'removeLogo']);
         Route::put('/{tenant}/set-default', [TenantController::class, 'setDefault']);
         Route::put('/{tenant}/leave', [TenantController::class, 'leave']);
     });
