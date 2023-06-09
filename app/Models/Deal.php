@@ -16,6 +16,7 @@ class Deal extends Model
         'purpose',
         'type',
         'member_id',
+        'property_id',
     ];
 
     public function contact()
