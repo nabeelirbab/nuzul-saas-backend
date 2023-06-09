@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Deals\DealStoreClientRequest;
 use App\Http\Requests\Api\Deals\DealStoreRequest;
 use App\Http\Requests\Api\Deals\DealUpdateRequest;
 use App\Http\Resources\DealResource;
@@ -73,7 +74,7 @@ class DealController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function storeWebsiteDeal(Request $request)
+    public function storeWebsiteDeal(DealStoreClientRequest $request)
     {
         // let's check if contact exist by mobile number.
         $c = Contact::where('mobile_number', $request->mobile_number)->first();
