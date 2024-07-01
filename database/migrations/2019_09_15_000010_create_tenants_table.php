@@ -11,20 +11,19 @@ class CreateTenantsTable extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('tenants', function (Blueprint $table) {
-            $table->bigIncrements('id')->unsigned()->index();
-            // your custom columns may go here
+  public function up(): void
+{
+    Schema::create('tenants', function (Blueprint $table) {
+        $table->bigIncrements('id')->unsigned()->index();
+        // your custom columns may go here
+        $table->string('name_en')->nullable();
+        $table->string('name_ar')->nullable();
+        $table->boolean('active')->default(true);
+        $table->timestamps();
+        $table->text('data')->nullable();
+    });
+}
 
-            $table->string('name_en')->nullable();
-            $table->string('name_ar')->nullable();
-            $table->boolean('active')->default(true);
-
-            $table->timestamps();
-            $table->json('data')->nullable();
-        });
-    }
 
     /**
      * Reverse the migrations.
